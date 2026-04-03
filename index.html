@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRID ACTUAL — Tactical Resource Allocation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@500;700&display=swap');
+
+:root {
+  --bg:       #050a03;
+  --bg2:      #090f07;
+  --bg3:      #0d140a;
+  --bg4:      #111a0d;
+  --bg5:      #161f11;
+  --border:   #192a12;
+  --border2:  #233d18;
+  --border3:  #2d5020;
+  --border4:  #3a6628;
+  --text:     #a8d882;
+  --text2:    #6aaa44;
+  --text3:    #3c6825;
+  --text4:    #1e3a10;
+  --accent:   #5dea8a;
+  --accent2:  #2dd464;
+  --accent3:  #1ab84e;
+  --amber:    #fbbf24;
+  --amber2:   #f59e0b;
+  --amber3:   #d97706;
+  --red:      #f87171;
+  --red2:     #ef4444;
+  --purple:   #c4b5fd;
+  --purple2:  #a78bfa;
+  --blue:     #60a5fa;
+  --mono:     'Share Tech Mono', monospace;
+  --disp:     'Rajdhani', sans-serif;
+  --hud:      'Orbitron', 'Courier New', 'Lucida Console', monospace;
+  --tile:     68px;
+  --gap:      4px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--mono);
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;
+  padding:16px 18px 36px;
+  background-image:
+    radial-gradient(ellipse at 50% 0%,rgba(74,222,128,.04) 0%,transparent 70%),
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.12) 2px,rgba(0,0,0,.12) 4px);
+}
+@keyframes screenOn{
+  0%{opacity:0;filter:brightness(4) saturate(0)}
+  5%{opacity:1;filter:brightness(1.8) saturate(.5)}
+  15%{opacity:.85;filter:brightness(1.2)}
+  25%{opacity:1;filter:brightness(1) saturate(1)}
+}
+body{animation:screenOn .8s ease-out;}
+
+.screen{display:none;width:100%;max-width:1020px;}
+.screen.active{display:flex;flex-direction:column;align-items:center;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ════════════════════════════════════════
+   CUSTOM CURSORS (SVG data URIs)
+   Built as 32×32 SVGs, hotspot at 16,16
+════════════════════════════════════════ */
+:root {
+  /* Scout: magnifying glass */
+  --cur-scout: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='13' cy='13' r='7' fill='none' stroke='%235dea8a' stroke-width='2.5'/%3E%3Cline x1='18.2' y1='18.2' x2='26' y2='26' stroke='%235dea8a' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, crosshair;
+
+  /* Scout + Truck: magnifying glass with small truck */
+  --cur-scout-truck: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='11' cy='11' r='6' fill='none' stroke='%235dea8a' stroke-width='2'/%3E%3Cline x1='15.5' y1='15.5' x2='21' y2='21' stroke='%235dea8a' stroke-width='2' stroke-linecap='round'/%3E%3Crect x='16' y='20' width='12' height='7' rx='1.5' fill='%2360a5fa' stroke='%2393c5fd' stroke-width='.8'/%3E%3Crect x='28' y='21.5' width='4' height='5' rx='.8' fill='%2360a5fa' stroke='%2393c5fd' stroke-width='.8'/%3E%3Ccircle cx='19.5' cy='27.5' r='1.8' fill='%23bfdbfe'/%3E%3Ccircle cx='26' cy='27.5' r='1.8' fill='%23bfdbfe'/%3E%3C/svg%3E") 16 16, crosshair;
+
+  /* Truck only: deploy eligible scouted zone */
+  --cur-truck: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect x='4' y='10' width='18' height='10' rx='2' fill='%2360a5fa' stroke='%2393c5fd' stroke-width='1'/%3E%3Crect x='22' y='12' width='7' height='8' rx='1.2' fill='%2360a5fa' stroke='%2393c5fd' stroke-width='1'/%3E%3Ccircle cx='9' cy='21.5' r='3' fill='%23bfdbfe' stroke='%2360a5fa' stroke-width='1'/%3E%3Ccircle cx='20' cy='21.5' r='3' fill='%23bfdbfe' stroke='%2360a5fa' stroke-width='1'/%3E%3Cline x1='22' y1='15' x2='22' y2='20' stroke='%2393c5fd' stroke-width='.8'/%3E%3C/svg%3E") 16 16, pointer;
+
+  /* Denied (convoy blocked, zone scouted, scout still valid):
+     Red circle-slash but with small magnifying glass */
+  --cur-denied: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='%23ef4444' stroke-width='2.5'/%3E%3Cline x1='7.5' y1='7.5' x2='24.5' y2='24.5' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, not-allowed;
+}
+
+/* ════════════════════════════════════════
+   DESIGN SYSTEM
+════════════════════════════════════════ */
+.framed{position:relative;}
+.framed::before,.framed::after{content:'';position:absolute;border-color:var(--border4);border-style:solid;width:12px;height:12px;}
+.framed::before{top:-1px;left:-1px;border-width:2px 0 0 2px;}
+.framed::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
+.framed.lg::before,.framed.lg::after{width:16px;height:16px;}
+
+.panel{background:var(--bg2);border:1px solid var(--border2);position:relative;overflow:hidden;}
+.panel::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(93,234,138,.03) 0%,transparent 40%);pointer-events:none;}
+
+.panel-hdr{background:var(--bg3);border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;}
+
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dot-g{background:var(--accent2);box-shadow:0 0 6px var(--accent2);animation:blink 2.2s infinite;}
+.dot-a{background:var(--amber2);box-shadow:0 0 6px var(--amber2);animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:10px 26px;border:none;cursor:pointer;transition:all .15s ease;position:relative;overflow:hidden;}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,transparent 100%);pointer-events:none;}
+.btn-p{background:linear-gradient(180deg,rgba(93,234,138,.14),rgba(93,234,138,.08));color:var(--accent);border:1px solid var(--accent3);box-shadow:0 0 10px rgba(93,234,138,.12),inset 0 1px 0 rgba(93,234,138,.1);}
+.btn-p:hover{background:linear-gradient(180deg,rgba(93,234,138,.22),rgba(93,234,138,.14));box-shadow:0 0 18px rgba(93,234,138,.25);transform:translateY(-1px);}
+.btn-g{background:rgba(255,255,255,.02);color:var(--text2);border:1px solid var(--border2);}
+.btn-g:hover{border-color:var(--border3);color:var(--text);background:var(--bg3);}
+.btn-a{background:linear-gradient(180deg,rgba(251,191,36,.12),rgba(251,191,36,.06));color:var(--amber);border:1px solid var(--amber3);box-shadow:0 0 10px rgba(251,191,36,.1);}
+.btn-a:hover{background:linear-gradient(180deg,rgba(251,191,36,.2),rgba(251,191,36,.12));box-shadow:0 0 18px rgba(251,191,36,.2);}
+
+.mil-badge{font-size:10px;letter-spacing:.2em;color:var(--accent);background:rgba(93,234,138,.06);border:1px solid rgba(93,234,138,.2);padding:4px 16px;text-transform:uppercase;}
+
+/* ════════════════════════════════════════
+   INTRO
+════════════════════════════════════════ */
+#screen-intro{gap:0;max-width:660px;}
+.intro-hero{width:100%;text-align:center;padding:30px 20px 22px;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
+.intro-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:1px;height:30px;background:linear-gradient(180deg,transparent,var(--accent2));}
+.callsign{font-family:var(--hud);font-size:48px;font-weight:700;letter-spacing:.12em;color:var(--accent);text-shadow:0 0 20px rgba(93,234,138,.4),0 0 50px rgba(93,234,138,.15);line-height:1;}
+.intro-sub{font-size:10px;letter-spacing:.3em;color:var(--text3);text-transform:uppercase;}
+.intro-tag{font-family:var(--disp);font-size:14px;color:var(--text2);line-height:1.6;max-width:420px;font-weight:400;}
+
+.briefing{width:100%;margin-bottom:14px;}
+.brief-body{padding:16px 20px;display:flex;flex-direction:column;gap:11px;}
+.brief-p{font-family:var(--disp);font-size:14px;color:var(--text2);line-height:1.65;font-weight:400;}
+.brief-p strong{color:var(--text);font-weight:600;}
+.ac-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px;}
+.ac{background:var(--bg3);border:1px solid var(--border);padding:11px 14px;display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden;}
+.ac::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
+.ac.dep::before{background:linear-gradient(90deg,var(--accent3),transparent);}
+.ac.sct::before{background:linear-gradient(90deg,var(--purple2),transparent);}
+.ac-lbl{font-size:9px;letter-spacing:.15em;text-transform:uppercase;}
+.ac.dep .ac-lbl{color:var(--accent);}
+.ac.sct .ac-lbl{color:var(--purple);}
+.ac-title{font-family:var(--disp);font-size:14px;font-weight:600;color:var(--text);}
+.ac-desc{font-family:var(--disp);font-size:12px;color:var(--text2);line-height:1.45;font-weight:400;}
+.ac-pts{font-size:10px;margin-top:2px;}
+.ac.dep .ac-pts{color:var(--amber);}
+.ac.sct .ac-pts{color:var(--purple);}
+.movement-callout{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.22);border-left:2px solid var(--blue);padding:11px 15px;font-family:var(--disp);font-size:13px;color:rgba(96,165,250,.9);line-height:1.6;font-weight:400;}
+.movement-callout strong{color:var(--blue);font-weight:600;}
+.intro-actions{display:flex;flex-direction:column;align-items:center;gap:9px;padding:16px 0 0;}
+.intro-hint{font-size:9px;letter-spacing:.12em;color:var(--text4);text-transform:uppercase;}
+
+/* ════════════════════════════════════════
+   TUTORIAL
+════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   IN-GAME TUTORIAL GUIDE BAR
+   Fixed bottom bar that overlays the game
+   screen during the practice round.
+════════════════════════════════════════ */
+.tut-guide{
+  position:fixed;
+  bottom:0;left:50%;
+  transform:translateX(-50%);
+  width:100%;max-width:1020px;
+  background:rgba(5,10,3,.96);
+  border-top:2px solid var(--accent3);
+  padding:12px 20px;
+  display:none;
+  align-items:center;
+  gap:16px;
+  z-index:80;
+  box-shadow:0 -6px 24px rgba(0,0,0,.5);
+}
+.tut-guide.active{display:flex;}
+.tg-text{flex:1;display:flex;flex-direction:column;gap:3px;}
+.tg-step{font-size:9px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;}
+.tg-title{font-family:var(--hud);font-size:14px;color:var(--accent);letter-spacing:.06em;}
+.tg-body{font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.45;font-weight:400;}
+.tg-body strong{color:var(--text);font-weight:600;}
+.tg-action-badge{
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--amber);background:rgba(245,158,11,.08);
+  border:1px solid rgba(245,158,11,.3);
+  padding:3px 10px;white-space:nowrap;flex-shrink:0;
+}
+/* Pulse highlight on tiles awaiting tutorial interaction */
+@keyframes tutPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(93,234,138,.0);}
+  50%{box-shadow:0 0 0 3px rgba(93,234,138,.45);}
+}
+.sector.tut-pulse{animation:tutPulse 1.4s ease-in-out infinite;}
+
+/* ════════════════════════════════════════
+   GAME SCREEN
+════════════════════════════════════════ */
+#screen-game{gap:8px;}
+
+.round-track{width:100%;background:var(--bg2);border:1px solid var(--border2);padding:9px 14px;display:flex;align-items:flex-start;gap:10px;position:relative;overflow:hidden;}
+.round-track::before{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.15),transparent);}
+.rt-label{font-family:var(--hud);font-size:9px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;white-space:nowrap;padding-top:4px;min-width:46px;}
+.rt-pips{display:flex;gap:3px;flex:1;align-items:flex-start;flex-wrap:nowrap;}
+.rt-pip{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;}
+.rt-bar{width:100%;height:9px;background:var(--bg4);border:1px solid var(--border);transition:background .3s,box-shadow .3s;flex-shrink:0;}
+.rt-bar.done{background:rgba(93,234,138,.25);border-color:var(--text3);}
+.rt-bar.done.post{background:rgba(196,181,253,.2);border-color:rgba(196,181,253,.35);}
+.rt-bar.current{background:linear-gradient(180deg,var(--accent2),var(--accent3));border-color:var(--accent2);box-shadow:0 0 8px rgba(93,234,138,.5);}
+.rt-score{font-family:var(--hud);font-size:8px;font-weight:500;color:var(--text4);white-space:nowrap;line-height:1;min-height:11px;text-align:center;width:100%;overflow:hidden;text-overflow:clip;}
+.rt-score.filled{color:var(--text2);}
+.rt-score.post{color:rgba(196,181,253,.55);}
+.rt-dis{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;}
+.rt-dis-bar{width:3px;height:9px;background:var(--amber2);box-shadow:0 0 5px rgba(251,191,36,.4);}
+.rt-dis-lbl{font-size:7px;color:var(--amber2);white-space:nowrap;line-height:1;}
+.rt-curr{font-family:var(--hud);font-size:11px;color:var(--text2);white-space:nowrap;padding-top:3px;}
+.rt-curr strong{color:var(--accent);}
+
+.hud{width:100%;display:grid;grid-template-columns:auto 1px auto 1px 1fr 1px auto 1px auto;gap:12px;align-items:center;padding:10px 16px;background:var(--bg2);border:1px solid var(--border2);position:relative;overflow:hidden;}
+.hud::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.1),transparent);}
+.hdiv{width:1px;height:30px;background:var(--border2);}
+.hblk{display:flex;flex-direction:column;gap:3px;}
+.hblk.r{text-align:right;}
+.hlbl{font-size:9px;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;}
+.hval{font-family:var(--hud);font-size:22px;font-weight:700;color:var(--accent);line-height:1.1;text-shadow:0 0 8px rgba(93,234,138,.3);}
+.hval.flash{animation:hf .4s ease;}
+@keyframes hf{0%,100%{color:var(--accent)}40%{color:#fff;text-shadow:0 0 16px var(--accent)}}
+.hval.dim{color:var(--text);text-shadow:none;}
+.pcol{display:flex;flex-direction:column;gap:5px;}
+.ptrk{height:5px;background:var(--bg4);border:1px solid var(--border);border-radius:2px;overflow:hidden;}
+.pfill{height:100%;background:linear-gradient(90deg,var(--accent3),var(--accent2));transition:width .4s ease;box-shadow:0 0 6px rgba(93,234,138,.5);}
+.plbl{font-size:9px;letter-spacing:.1em;color:var(--text3);text-align:center;text-transform:uppercase;}
+
+.convoy-strip{width:100%;padding:7px 14px;background:var(--bg2);border:1px solid var(--border2);display:flex;align-items:center;gap:11px;font-size:11px;}
+.convoy-icon-wrap{width:28px;height:28px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.3);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.convoy-msg{color:var(--text2);line-height:1.4;flex:1;letter-spacing:.04em;}
+.convoy-msg .free{color:var(--accent2);}
+.convoy-msg .locked{color:var(--amber);}
+.convoy-msg strong{color:var(--blue);font-family:var(--hud);font-size:12px;}
+
+.game-main{width:100%;display:flex;gap:12px;align-items:flex-start;}
+
+/* ════════════════════════════════════════
+   10×10 TACTICAL MAP
+════════════════════════════════════════ */
+.map-frame{flex-shrink:0;position:relative;padding:3px;background:var(--bg2);border:1px solid var(--border3);}
+.map-frame::before{content:'';position:absolute;inset:-1px;border:1px solid rgba(93,234,138,.06);pointer-events:none;}
+.map-frame::after{content:'TACTICAL MAP — GRID ACTUAL';position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-family:var(--hud);font-size:8px;letter-spacing:.18em;color:var(--text4);white-space:nowrap;}
+
+/* Large score overlay — floats over entire map on each action */
+.map-score-overlay{
+  position:absolute;
+  /* Top banner — sits above the coordinate labels, full width of map frame */
+  top:0; left:0; right:0;
+  height:56px;
+  display:flex; flex-direction:row;
+  align-items:center; justify-content:center;
+  gap:10px;
+  pointer-events:none;
+  z-index:20;
+  opacity:0;
+  transition:opacity .15s ease;
+  border-radius:2px 2px 0 0;
+}
+.map-score-overlay.show{opacity:1;}
+.mso-pts{
+  font-family:var(--hud);
+  font-size:36px;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:-.01em;
+  filter:drop-shadow(0 0 10px currentColor);
+}
+.mso-label{
+  font-family:var(--hud);
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  opacity:.8;
+  /* label sits below pts in a sub-column */
+}
+.mso-zone{
+  font-family:var(--disp);
+  font-size:13px;
+  color:rgba(255,255,255,.55);
+  letter-spacing:.05em;
+  font-weight:500;
+}
+/* backdrop: only covers the top banner area */
+.map-score-overlay::before{
+  content:'';
+  position:absolute; inset:0;
+  background:rgba(5,10,3,.82);
+  border-bottom:1px solid rgba(93,234,138,.08);
+  pointer-events:none;
+}
+
+.map-inner{position:relative;padding-left:20px;padding-top:20px;}
+.coord-row{position:absolute;top:0;left:20px;display:flex;gap:var(--gap);}
+.coord-col{position:absolute;left:0;top:20px;display:flex;flex-direction:column;gap:var(--gap);}
+.clbl{font-family:var(--hud);font-size:8px;letter-spacing:.1em;color:var(--text4);text-align:center;text-transform:uppercase;}
+.clbl.col{width:var(--tile);height:18px;display:flex;align-items:center;justify-content:center;}
+.clbl.row{width:18px;height:var(--tile);display:flex;align-items:center;justify-content:center;}
+
+.sector-grid{display:grid;grid-template-columns:repeat(10,var(--tile));grid-template-rows:repeat(10,var(--tile));gap:var(--gap);}
+/* Grid locked during tutorial button (read) steps */
+.sector-grid.tut-locked{pointer-events:none;opacity:.45;}
+
+/* ── TILE ── */
+.sector{
+  width:var(--tile);height:var(--tile);
+  background:var(--bg2);border:1px solid var(--border2);
+  cursor:var(--cur-scout); /* default: always scout available */
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  position:relative;
+  transition:border-color .15s,transform .12s,background .15s,box-shadow .15s;
+  user-select:none;overflow:hidden;
+}
+/* faint crosshair */
+.sector::before,.sector::after{content:'';position:absolute;background:rgba(93,234,138,.05);pointer-events:none;}
+.sector::before{top:50%;left:6px;right:6px;height:1px;transform:translateY(-50%);}
+.sector::after{left:50%;top:6px;bottom:6px;width:1px;transform:translateX(-50%);}
+
+/* demand tints */
+.sector.d1{background:rgba(10,18,8,.75); border-color:rgba(45,80,28,.6);}
+.sector.d2{background:rgba(12,22,8,.8);  border-color:rgba(64,100,40,.7);}
+.sector.d3{background:rgba(34,20,2,.8);  border-color:rgba(180,100,8,.75);}
+.sector.d4{background:rgba(50,18,2,.82); border-color:rgba(220,90,20,.82);box-shadow:inset 0 0 8px rgba(220,90,20,.08),0 0 5px rgba(220,90,20,.12);}
+.sector.d5{
+  background:rgba(46,3,3,.88);
+  border-color:rgba(248,68,68,.95);
+  box-shadow:inset 0 0 16px rgba(239,68,68,.15),0 0 10px rgba(239,68,68,.25);
+  animation:criticalPulse 2.4s ease-in-out infinite;
+}
+@keyframes criticalPulse{
+  0%,100%{box-shadow:inset 0 0 16px rgba(239,68,68,.15),0 0 10px rgba(239,68,68,.25);}
+  50%{box-shadow:inset 0 0 22px rgba(239,68,68,.25),0 0 18px rgba(239,68,68,.4);}
+}
+
+/* cursor states */
+/* Unknown zone, convoy eligible: scout+truck */
+.sector.unknown.adj-valid { cursor: var(--cur-scout-truck); }
+/* Unknown zone, not eligible and not truck-here: scout only */
+.sector.unknown.adj-blocked { cursor: var(--cur-scout); }
+/* Scouted zone, convoy eligible: truck */
+.sector.adj-valid:not(.unknown) { cursor: var(--cur-truck); }
+/* Scouted zone, not eligible: denied (scout still possible via modal) */
+.sector.adj-blocked:not(.unknown) { cursor: var(--cur-denied); }
+/* Truck position: truck cursor */
+.sector.truck-here { cursor: var(--cur-truck); }
+/* First deployment (no restriction yet): scout+truck for unknown, truck for scouted */
+.sector.free-deploy.unknown { cursor: var(--cur-scout-truck); }
+.sector.free-deploy:not(.unknown) { cursor: var(--cur-truck); }
+
+/* hover */
+.sector:hover{border-color:var(--accent2) !important;transform:scale(1.05);z-index:3;box-shadow:0 0 12px rgba(93,234,138,.2);}
+.sector:hover::before,.sector:hover::after{background:rgba(93,234,138,.1);}
+.sector.selected{border-color:var(--accent) !important;border-width:2px;box-shadow:0 0 14px rgba(93,234,138,.3);}
+/* Blocked hover: no scale, keep denied look */
+.sector.adj-blocked:hover{transform:none !important;border-color:rgba(239,68,68,.4) !important;box-shadow:none !important;}
+.sector.adj-blocked:hover::before,.sector.adj-blocked:hover::after{background:rgba(239,68,68,.05);}
+
+/* adjacency */
+.sector.adj-valid{border-color:rgba(96,165,250,.7) !important;box-shadow:0 0 10px rgba(96,165,250,.2),inset 0 0 8px rgba(96,165,250,.06);}
+.sector.truck-here{border-color:rgba(96,165,250,.9) !important;border-width:2px;box-shadow:0 0 12px rgba(96,165,250,.3),inset 0 0 8px rgba(96,165,250,.08);}
+
+.sector.resolving{animation:rfl .55s ease;}
+@keyframes rfl{0%{filter:brightness(1)}30%{filter:brightness(1.8)}100%{filter:brightness(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.sector.shake{animation:shake .25s ease;}
+
+/* depleted */
+.sector.depleted .terrain-svg{opacity:.5;}
+.dep-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber3),transparent);opacity:0;}
+.sector.depleted .dep-bar{opacity:1;}
+
+/* eff demand badge */
+.eff-badge{position:absolute;top:3px;right:4px;font-family:var(--hud);font-size:9px;font-weight:700;line-height:1;}
+
+/* unknown */
+.sector.unknown{background:var(--bg3);border-color:var(--border);}
+.unk-icon{font-family:var(--hud);font-size:20px;font-weight:700;color:var(--text4);line-height:1;}
+.unk-sub{font-size:6px;letter-spacing:.14em;color:var(--text4);text-transform:uppercase;}
+
+/* terrain */
+.terrain-svg{width:40px;height:40px;flex-shrink:0;}
+.sector-nm{font-family:var(--hud);font-size:7px;letter-spacing:.09em;color:var(--text3);text-transform:uppercase;text-align:center;line-height:1.2;}
+
+/* history dots */
+.s-hist{display:flex;gap:2px;position:absolute;bottom:3px;left:50%;transform:translateX(-50%);}
+.h-dot{width:5px;height:5px;border-radius:50%;}
+.h-dot.stale{opacity:.25;}
+
+/* truck icon */
+.truck-icon{position:absolute;bottom:4px;right:4px;width:18px;height:18px;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.5);border-radius:2px;display:flex;align-items:center;justify-content:center;animation:truckPulse 2s ease-in-out infinite;}
+@keyframes truckPulse{0%,100%{box-shadow:0 0 4px rgba(96,165,250,.3)}50%{box-shadow:0 0 10px rgba(96,165,250,.6)}}
+
+/* demand overlay */
+.s-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;gap:1px;}
+.s-ov.show{opacity:1;}
+.ov-d{font-family:var(--hud);font-size:18px;font-weight:700;}
+.ov-l{font-size:7px;letter-spacing:.1em;text-transform:uppercase;}
+
+/* ════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════ */
+.sidebar{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px;}
+.s-card{background:var(--bg2);border:1px solid var(--border2);display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.s-card::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(93,234,138,.025) 0%,transparent 50%);pointer-events:none;}
+.s-hdr{background:var(--bg3);border-bottom:1px solid var(--border);padding:6px 12px;font-size:9px;letter-spacing:.17em;color:var(--text3);text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.s-body{padding:10px 12px;display:flex;flex-direction:column;gap:7px;}
+.s-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 0;border-bottom:1px solid var(--border);}
+.s-row:last-child{border-bottom:none;}
+.s-row-l{color:var(--text2);letter-spacing:.04em;}
+.s-row-v{font-family:var(--hud);font-size:13px;color:var(--text);font-weight:500;}
+
+.pts-popup{
+  background:var(--bg2);
+  border:1px solid var(--border3);
+  border-left:4px solid var(--accent2);
+  padding:13px 16px;
+  display:flex;flex-direction:column;gap:5px;
+  opacity:1;
+  position:relative;overflow:hidden;
+  transition:border-left-color .25s;
+}
+.pts-popup::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(93,234,138,.06),transparent);pointer-events:none;transition:background .25s;}
+.pts-popup.tone-commit{border-left-color:var(--accent2);}
+.pts-popup.tone-commit::before{background:linear-gradient(90deg,rgba(93,234,138,.08),transparent);}
+.pts-popup.tone-probe{border-left-color:var(--purple2);}
+.pts-popup.tone-probe::before{background:linear-gradient(90deg,rgba(196,181,253,.06),transparent);}
+.pts-popup.tone-low{border-left-color:var(--amber2);}
+.pts-popup.tone-low::before{background:linear-gradient(90deg,rgba(251,191,36,.06),transparent);}
+.pp-action{font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+.pts-popup.tone-commit .pp-action{color:var(--accent);}
+.pts-popup.tone-probe .pp-action{color:var(--purple);}
+.pts-popup.tone-low .pp-action{color:var(--amber);}
+.pp-zone{font-family:var(--disp);font-size:13px;color:var(--text2);font-weight:400;}
+.pp-pts{font-family:var(--hud);font-size:38px;font-weight:700;line-height:1.05;}
+.pts-popup.tone-commit .pp-pts{color:var(--accent);text-shadow:0 0 14px rgba(93,234,138,.4);}
+.pts-popup.tone-probe .pp-pts{color:var(--purple);text-shadow:0 0 14px rgba(196,181,253,.4);}
+.pts-popup.tone-low .pp-pts{color:var(--amber);text-shadow:0 0 14px rgba(251,191,36,.4);}
+.pp-detail{font-size:11px;color:var(--text3);letter-spacing:.05em;}
+
+.dcl{display:flex;flex-direction:column;gap:4px;}
+.dcl-row{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--text2);}
+.dcl-sw{width:14px;height:14px;border-radius:2px;flex-shrink:0;border:1px solid rgba(255,255,255,.06);}
+.dep-legend{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--text2);}
+.dep-sw{width:22px;height:3px;background:linear-gradient(90deg,var(--amber3),transparent);border-radius:1px;}
+
+/* terrain legend */
+.terrain-legend{display:flex;flex-direction:column;gap:5px;}
+.tl-row{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text2);}
+.tl-icon{width:22px;height:22px;flex-shrink:0;}
+
+/* ════════════════════════════════════════
+   MODAL
+════════════════════════════════════════ */
+.modal-bd{position:fixed;inset:0;background:rgba(1,4,1,.78);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .18s;}
+.modal-bd.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border3);padding:20px 22px;width:420px;max-width:95vw;display:flex;flex-direction:column;gap:13px;transform:scale(.97);transition:transform .18s;position:relative;overflow:hidden;}
+.modal::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(93,234,138,.03) 0%,transparent 40%);pointer-events:none;}
+.modal::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.2),transparent);}
+.modal-corn::before,.modal-corn::after{content:'';position:absolute;width:12px;height:12px;border-color:var(--border4);border-style:solid;}
+.modal-corn::before{top:-1px;left:-1px;border-width:2px 0 0 2px;}
+.modal-corn::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
+.modal-bd.open .modal{transform:scale(1);}
+
+.m-zone{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border2);padding:12px 14px;position:relative;overflow:hidden;}
+.m-zone::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.12),transparent);}
+.m-terrain{width:46px;height:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.m-info{flex:1;}
+.m-name{font-family:var(--hud);font-size:16px;font-weight:700;color:var(--accent);letter-spacing:.1em;}
+.m-sig{font-size:10px;color:var(--text2);margin-top:2px;letter-spacing:.07em;}
+.m-demand{font-family:var(--disp);font-size:13px;margin-top:3px;font-weight:600;}
+.m-hist{font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:.05em;}
+.m-q{font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.5;font-weight:400;}
+.m-q strong{color:var(--text);font-weight:600;}
+.m-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ch-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 13px;cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:border-color .13s,background .13s,transform .1s,box-shadow .13s;text-align:left;position:relative;overflow:hidden;}
+.ch-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
+.ch-btn.dep::before{background:linear-gradient(90deg,var(--accent3),transparent);}
+.ch-btn.sct::before{background:linear-gradient(90deg,var(--purple2),transparent);}
+.ch-btn:hover{transform:translateY(-2px);}
+.ch-btn.dep:hover{border-color:var(--accent3);background:rgba(93,234,138,.04);box-shadow:0 0 10px rgba(93,234,138,.1);}
+.ch-btn.sct:hover{border-color:var(--purple2);background:rgba(196,181,253,.04);box-shadow:0 0 10px rgba(196,181,253,.1);}
+.ch-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;}
+.ch-btn.dep .ch-lbl{color:var(--accent);}
+.ch-btn.sct .ch-lbl{color:var(--purple);}
+.ch-action{font-family:var(--disp);font-size:13px;font-weight:600;color:var(--text);}
+.ch-desc{font-family:var(--disp);font-size:11px;color:var(--text2);line-height:1.4;font-weight:400;}
+.ch-pts{font-size:10px;margin-top:2px;}
+.ch-btn.dep .ch-pts{color:var(--amber);}
+.ch-btn.sct .ch-pts{color:var(--purple);}
+.ch-btn.sct-only{grid-column:1/-1;}
+.m-convoy-note{background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.2);padding:8px 12px;font-size:10px;color:rgba(96,165,250,.8);letter-spacing:.05em;line-height:1.5;font-family:var(--disp);font-weight:400;}
+.m-dismiss{font-size:10px;color:var(--text3);text-align:center;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;}
+.m-dismiss:hover{color:var(--text2);}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--bg3);border:1px solid var(--border3);padding:7px 18px;font-size:10px;letter-spacing:.08em;opacity:0;transition:opacity .18s,transform .18s;pointer-events:none;z-index:200;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.good{border-color:var(--accent2);color:var(--accent);box-shadow:0 0 8px rgba(93,234,138,.2);}
+.toast.ok{border-color:var(--amber2);color:var(--amber);box-shadow:0 0 8px rgba(251,191,36,.2);}
+.toast.info{border-color:var(--purple2);color:var(--purple);box-shadow:0 0 8px rgba(196,181,253,.2);}
+.toast.warn{border-color:var(--amber3);color:var(--amber);}
+
+/* ════════════════════════════════════════
+   BREAK / AAR
+════════════════════════════════════════ */
+#screen-break{gap:16px;max-width:600px;text-align:center;}
+.aar-hdr{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.aar-round{font-family:var(--hud);font-size:34px;font-weight:700;color:var(--accent);letter-spacing:.12em;text-shadow:0 0 18px rgba(93,234,138,.3);}
+.aar-title{font-size:10px;letter-spacing:.24em;color:var(--text2);text-transform:uppercase;}
+.aar-sc{width:100%;background:var(--bg2);border:1px solid var(--border3);padding:20px 28px;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;overflow:hidden;}
+.aar-sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.25),transparent);}
+.aar-sc-c::before,.aar-sc-c::after{content:'';position:absolute;width:12px;height:12px;border-color:var(--border4);border-style:solid;}
+.aar-sc-c::before{top:-1px;left:-1px;border-width:2px 0 0 2px;}
+.aar-sc-c::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
+.aar-sc-lbl{font-size:9px;letter-spacing:.2em;color:var(--text3);text-transform:uppercase;}
+.aar-sc-val{font-family:var(--hud);font-size:50px;font-weight:700;color:var(--accent);line-height:1;text-shadow:0 0 20px rgba(93,234,138,.35);}
+.aar-sc-sub{font-size:10px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;}
+.aar-stats{width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.aar-stat{background:var(--bg2);border:1px solid var(--border);padding:9px 10px;display:flex;flex-direction:column;gap:2px;position:relative;overflow:hidden;}
+.aar-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(93,234,138,.08),transparent);}
+.aar-stat-lbl{font-size:8px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;}
+.aar-stat-val{font-family:var(--hud);font-size:18px;font-weight:500;color:var(--text);}
+.chart-wrap{width:100%;background:var(--bg2);border:1px solid var(--border);padding:12px 14px 10px;display:flex;flex-direction:column;gap:6px;}
+.chart-title{font-size:9px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;}
+.chart-svg-wrap{width:100%;position:relative;}
+.chart-svg{width:100%;overflow:visible;display:block;}
+/* SVG elements styled via JS — CSS for consistency */
+.chart-axis-line{stroke:var(--border2);stroke-width:1;}
+.chart-grid-line{stroke:var(--border);stroke-width:1;stroke-dasharray:3 4;}
+.chart-dis-line{stroke:var(--amber2);stroke-width:1.5;stroke-dasharray:4 3;opacity:.7;}
+.chart-line-pre{fill:none;stroke:rgba(93,234,138,.7);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+.chart-line-post{fill:none;stroke:rgba(196,181,253,.6);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+.chart-dot{r:4;stroke-width:1.5;}
+.chart-dot-pre{fill:rgba(93,234,138,.9);stroke:var(--accent2);}
+.chart-dot-post{fill:rgba(196,181,253,.85);stroke:var(--purple2);}
+.chart-dot-cur{r:5.5;fill:var(--accent);stroke:#fff;stroke-width:2;filter:drop-shadow(0 0 4px rgba(93,234,138,.6));}
+.chart-tick-lbl{fill:var(--text3);font-size:8px;font-family:var(--hud);text-anchor:middle;}
+.chart-ytick-lbl{fill:var(--text3);font-size:8px;font-family:var(--hud);text-anchor:end;}
+.chart-dis-lbl{fill:var(--amber2);font-size:8px;font-family:var(--hud);text-anchor:middle;}
+
+/* ════════════════════════════════════════
+   DISRUPTION / END
+════════════════════════════════════════ */
+#screen-disruption{gap:20px;max-width:580px;text-align:center;}
+.dis-icon{width:64px;height:64px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;font-size:28px;animation:disAnim 2.5s ease-in-out infinite;}
+@keyframes disAnim{0%,100%{border-color:rgba(245,158,11,.3);box-shadow:none}50%{border-color:rgba(245,158,11,.8);box-shadow:0 0 22px rgba(245,158,11,.3)}}
+.dis-title{font-family:var(--hud);font-size:24px;font-weight:700;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;text-shadow:0 0 14px rgba(245,158,11,.3);}
+.dis-body{font-family:var(--disp);font-size:15px;color:var(--text2);line-height:1.7;max-width:460px;font-weight:400;}
+.dis-body strong{color:var(--text);font-weight:600;}
+.dis-detail{width:100%;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.18);padding:14px 17px;display:flex;flex-direction:column;gap:8px;text-align:left;}
+.dis-dtitle{font-size:9px;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;}
+.dis-item{display:flex;gap:8px;align-items:flex-start;font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.5;font-weight:400;}
+.dis-item strong{color:var(--text);font-weight:600;}
+.dis-chev{color:var(--amber2);font-size:12px;flex-shrink:0;margin-top:1px;}
+.dis-note{width:100%;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--amber3);padding:10px 14px;font-family:var(--disp);font-size:12px;color:var(--text2);line-height:1.6;text-align:left;font-weight:400;}
+.dis-note strong{color:var(--text);font-weight:600;}
+
+#screen-end{gap:16px;max-width:680px;text-align:center;}
+.end-title{font-family:var(--hud);font-size:26px;font-weight:700;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;text-shadow:0 0 14px rgba(93,234,138,.3);}
+.end-sc{width:100%;background:var(--bg2);border:1px solid var(--border3);padding:20px 30px;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;overflow:hidden;}
+.end-sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.3),transparent);}
+.end-sc-c::before,.end-sc-c::after{content:'';position:absolute;width:13px;height:13px;border-color:var(--border4);border-style:solid;}
+.end-sc-c::before{top:-1px;left:-1px;border-width:2px 0 0 2px;}
+.end-sc-c::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
+.end-sc-lbl{font-size:9px;letter-spacing:.2em;color:var(--text3);text-transform:uppercase;}
+.end-sc-val{font-family:var(--hud);font-size:54px;font-weight:700;color:var(--accent);line-height:1;text-shadow:0 0 24px rgba(93,234,138,.35);}
+.end-sc-sub{font-size:10px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;}
+.end-curve{width:100%;background:var(--bg2);border:1px solid var(--border);padding:11px 14px;display:flex;flex-direction:column;gap:8px;}
+.end-curve-title{font-size:9px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;}
+.end-curve-lbls{display:flex;justify-content:space-between;font-size:8px;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;}
+.end-curve-lbls .am{color:var(--amber2);}
+.end-stats{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.end-stat{background:var(--bg2);border:1px solid var(--border);padding:9px 11px;display:flex;flex-direction:column;gap:3px;position:relative;overflow:hidden;}
+.end-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(93,234,138,.06),transparent);}
+.end-stat-lbl{font-size:8px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;}
+.end-stat-val{font-family:var(--hud);font-size:19px;font-weight:500;color:var(--text);}
+.end-debrief{width:100%;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--accent3);padding:12px 16px;font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.65;text-align:left;font-weight:400;}
+.end-debrief strong{color:var(--text);font-weight:600;}
+.end-actions{display:flex;gap:9px;}
+</style>
+</head>
+<body>
+
+<!-- ══ INTRO ══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="intro-hero">
+    <div class="mil-badge">Tactical Resource Allocation System</div>
+    <div class="callsign">GRID ACTUAL</div>
+    <div class="intro-sub">Forward Logistics Command Interface</div>
+    <div class="intro-tag">Manage convoy assets across a contested operational grid. Maximize total score across 20 rounds.</div>
+  </div>
+  <div class="briefing panel framed">
+    <div class="panel-hdr"><div class="dot dot-a"></div>Operational Briefing</div>
+    <div class="brief-body">
+      <p class="brief-p">You are managing resource allocation across a <strong>10×10 grid of forward operating zones</strong>. Each zone has a demand level that determines how valuable a convoy deployment will be. You will complete <strong>20 rounds</strong>, each comprising <strong>10 decisions</strong>.</p>
+      <p class="brief-p">On each decision, select a zone. Clicking a <strong>scouted, eligible zone deploys a convoy immediately</strong>. Clicking an unknown zone or a blocked zone opens a decision panel where you choose between the two actions:</p>
+      <div class="ac-grid">
+        <div class="ac dep"><div class="ac-lbl">▸ Deploy convoy</div><div class="ac-title">Commit resources</div><div class="ac-desc">Send a supply convoy. Points awarded based on the zone's current demand level at time of deployment.</div><div class="ac-pts">+5 to +50 pts · scaled to demand</div></div>
+        <div class="ac sct"><div class="ac-lbl">▸ Send scout</div><div class="ac-title">Gather intelligence</div><div class="ac-desc">Dispatch a reconnaissance unit. Reveals the zone's demand level. Intelligence is retained in future rounds.</div><div class="ac-pts">+8 pts · demand confirmed</div></div>
+      </div>
+      <div class="movement-callout"><strong>Convoy movement:</strong> The first deployment each round may target any zone. After that, your convoy may only move to zones <strong>adjacent</strong> (including diagonal) to its current position. Scouting is always unrestricted.</div>
+      <p class="brief-p">Zone demand levels are <strong>hidden until a scout is sent</strong>. Scouting history persists across all rounds.</p>
+    </div>
+  </div>
+  <div class="intro-actions">
+    <button class="btn btn-p" onclick="startPracticeRound()">[ Begin Training Exercise ]</button>
+    <div class="intro-hint">Training exercise · then 20 scored rounds · ~15 min</div>
+  </div>
+</div>
+
+<!-- ══ IN-GAME TUTORIAL GUIDE BAR ═════════════════ -->
+<!-- Overlays the game screen during practice round -->
+<div class="tut-guide" id="tut-guide">
+  <div class="tg-text">
+    <div class="tg-step"  id="tg-step">Step 1 of 7</div>
+    <div class="tg-title" id="tg-title">—</div>
+    <div class="tg-body"  id="tg-body">—</div>
+  </div>
+  <div class="tg-action-badge" id="tg-badge" style="display:none">↑ Action required</div>
+  <button class="btn btn-p" id="tg-next" onclick="tutGuideNext()" style="display:none;white-space:nowrap;flex-shrink:0;">[ Next ]</button>
+</div>
+
+<!-- ══ PRACTICE COMPLETE ════════════════════════════ -->
+<div id="screen-practice-done" class="screen">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:18px;max-width:560px;text-align:center;padding:8px 0;">
+    <div class="mil-badge">Training Exercise — Complete</div>
+    <div style="font-family:var(--hud);font-size:30px;font-weight:700;color:var(--accent);letter-spacing:.1em;text-shadow:0 0 16px rgba(93,234,138,.3);">TRAINING COMPLETE</div>
+    <div style="background:var(--bg2);border:1px solid var(--border3);padding:18px 24px;width:100%;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.25),transparent)"></div>
+      <div style="font-family:var(--disp);font-size:15px;color:var(--text2);line-height:1.7;font-weight:400;">
+        The training exercise is now complete. <strong style="color:var(--text)">Your practice score was not recorded.</strong>
+        <br><br>
+        The scored mission consists of <strong style="color:var(--text)">20 rounds</strong> of 10 decisions each.
+        All mechanics work exactly as in the training exercise.
+        <br><br>
+        When you are ready, begin the mission.
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="beginRealSession()">[ Begin Mission ]</button>
+  </div>
+</div>
+
+<!-- ══ GAME ════════════════════════════════════════ -->
+<div id="screen-game" class="screen">
+  <div class="round-track">
+    <div class="rt-label">Round</div>
+    <div class="rt-pips" id="rt-pips"></div>
+    <div class="rt-curr" id="rt-curr"><strong>1</strong> / 20</div>
+  </div>
+  <div class="hud">
+    <div class="hblk"><div class="hlbl">Round score</div><div class="hval" id="hud-iter">0</div></div>
+    <div class="hdiv"></div>
+    <div class="hblk"><div class="hlbl">Total score</div><div class="hval dim" id="hud-total">0</div></div>
+    <div class="hdiv"></div>
+    <div class="pcol"><div class="ptrk"><div class="pfill" id="prog" style="width:0%"></div></div><div class="plbl" id="prog-lbl">Decision 0 of 10</div></div>
+    <div class="hdiv"></div>
+    <div class="hblk r"><div class="hlbl">Deployed / Scouted</div><div class="hval dim"><span id="hud-c">0</span> / <span id="hud-p">0</span></div></div>
+    <div class="hdiv"></div>
+    <div class="hblk r"><div class="hlbl">Intel coverage</div><div class="hval dim" id="hud-cov">0%</div></div>
+  </div>
+  <div class="game-main">
+    <div class="map-frame framed lg">
+      <div class="map-inner">
+        <div class="coord-row" id="col-lbls"></div>
+        <div class="coord-col" id="row-lbls"></div>
+        <div class="sector-grid" id="sector-grid"></div>
+      </div>
+      <!-- Score banner — appears at top of map frame after each action -->
+      <div class="map-score-overlay" id="map-score-overlay">
+        <div class="mso-pts" id="mso-pts">+0</div>
+        <div style="display:flex;flex-direction:column;gap:1px;position:relative;z-index:1;">
+          <div class="mso-label" id="mso-label">pts</div>
+          <div class="mso-zone"  id="mso-zone"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="pts-popup" id="pts-popup">
+        <div class="pp-action" id="pp-action">—</div>
+        <div class="pp-zone"   id="pp-zone">—</div>
+        <div class="pp-pts"    id="pp-pts">—</div>
+        <div class="pp-detail" id="pp-detail">—</div>
+      </div>
+
+      <!-- Convoy position — moved to sidebar to save vertical space -->
+      <div class="s-card">
+        <div class="s-hdr">
+          <div class="convoy-icon-wrap" style="width:20px;height:20px;flex-shrink:0;">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="5" width="10" height="6" rx="1" fill="rgba(96,165,250,.8)" stroke="rgba(96,165,250,1)" stroke-width=".6"/><rect x="11" y="6" width="4" height="4" rx=".5" fill="rgba(96,165,250,.6)" stroke="rgba(96,165,250,.9)" stroke-width=".5"/><circle cx="4" cy="11.5" r="1.5" fill="rgba(96,165,250,.95)"/><circle cx="10" cy="11.5" r="1.5" fill="rgba(96,165,250,.95)"/></svg>
+          </div>
+          Convoy Status
+        </div>
+        <div class="s-body" style="padding:8px 12px;">
+          <div class="convoy-msg" id="convoy-msg"><span class="free">Undeployed</span> — first deployment may target any zone</div>
+        </div>
+      </div>
+
+
+      <div class="s-card">
+        <div class="s-hdr"><div class="dot dot-g"></div>Zone Guide</div>
+        <div class="s-body">
+          <div style="font-family:var(--disp);font-size:12px;color:var(--text2);line-height:1.5;font-weight:400">Zone colors indicate demand level after scouting. Terrain type provides a signal about demand.</div>
+          <!-- Demand color legend -->
+          <div class="dcl">
+            <div class="dcl-row"><div class="dcl-sw" style="background:rgba(46,3,3,.88);border-color:rgba(248,68,68,.7)"></div><span style="color:var(--red)">Critical (5)</span></div>
+            <div class="dcl-row"><div class="dcl-sw" style="background:rgba(50,18,2,.82);border-color:rgba(220,90,20,.6)"></div><span style="color:#fb923c">High (4)</span></div>
+            <div class="dcl-row"><div class="dcl-sw" style="background:rgba(34,20,2,.8);border-color:rgba(180,100,8,.5)"></div><span style="color:var(--amber)">Moderate (3)</span></div>
+            <div class="dcl-row"><div class="dcl-sw" style="background:rgba(12,22,8,.8);border-color:rgba(64,100,40,.5)"></div><span>Low (1–2)</span></div>
+            <div class="dcl-row"><div class="dcl-sw" style="background:var(--bg3);border-color:var(--border)"></div><span>Unknown</span></div>
+          </div>
+          <!-- Convoy position guide -->
+          <div style="border-top:1px solid var(--border);padding-top:7px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+              <div style="width:16px;height:16px;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.4);border-radius:2px;display:flex;align-items:center;justify-content:center;">
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="1" y="5" width="10" height="6" rx="1" fill="rgba(96,165,250,.8)"/><rect x="11" y="6" width="4" height="4" rx=".5" fill="rgba(96,165,250,.6)"/><circle cx="4" cy="11.5" r="1.5" fill="rgba(96,165,250,.9)"/><circle cx="10" cy="11.5" r="1.5" fill="rgba(96,165,250,.9)"/></svg>
+              </div>
+              <span style="font-size:10px;color:var(--blue)">Convoy position</span>
+            </div>
+            <div style="display:flex;gap:5px;align-items:center;font-size:10px;color:var(--text2);">
+              <div style="width:12px;height:12px;border:1px solid rgba(96,165,250,.6);border-radius:1px;background:rgba(96,165,250,.08);flex-shrink:0"></div>
+              <span>Valid next deployment zone</span>
+            </div>
+          </div>
+          <div class="dep-legend" style="border-top:1px solid var(--border);padding-top:6px;"><div class="dep-sw"></div><span>Demand reduced this round</span></div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text2)"><div style="width:6px;height:6px;border-radius:50%;background:var(--red)"></div>High</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text2)"><div style="width:6px;height:6px;border-radius:50%;background:var(--amber2)"></div>Mid</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text2)"><div style="width:6px;height:6px;border-radius:50%;background:var(--text3)"></div>Low</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text2);opacity:.38"><div style="width:6px;height:6px;border-radius:50%;background:var(--text3)"></div>Stale</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL ══════════════════════════════════════ -->
+<div class="modal-bd" id="modal">
+  <div class="modal modal-corn">
+    <div class="m-zone">
+      <div class="m-terrain" id="m-terrain"></div>
+      <div class="m-info">
+        <div class="m-name"   id="m-name">—</div>
+        <div class="m-sig"    id="m-sig">—</div>
+        <div class="m-demand" id="m-demand"></div>
+        <div class="m-hist"   id="m-hist">No scout data</div>
+      </div>
+    </div>
+    <div class="m-q">Select action for <strong id="m-zone-q">this zone</strong>:</div>
+    <div class="m-choices">
+      <button class="ch-btn dep" id="ch-deploy" onclick="resolveAction('commit')">
+        <div class="ch-lbl">▸ Deploy convoy</div>
+        <div class="ch-action">Commit resources</div>
+        <div class="ch-desc">Points awarded based on the zone's current demand level at time of deployment.</div>
+        <div class="ch-pts" id="m-commit-pts">+5 to +50 pts</div>
+      </button>
+      <button class="ch-btn sct" onclick="resolveAction('probe')">
+        <div class="ch-lbl">▸ Send scout</div>
+        <div class="ch-action">Gather intelligence</div>
+        <div class="ch-desc">Reveals true demand level. Saved to record, visible in future rounds.</div>
+        <div class="ch-pts">+8 pts · demand confirmed</div>
+      </button>
+    </div>
+    <div class="m-convoy-note" id="m-convoy-note" style="display:none"></div>
+    <div class="m-dismiss" onclick="closeModal()">[ Stand down — select different zone ]</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="hidden" id="data-export" name="grid_session_data" value="">
+
+<!-- ══ PRACTICE BREAK ═════════════════════════════════ -->
+<div id="screen-practice-break" class="screen">
+  <div class="aar-hdr">
+    <div class="mil-badge">Training Exercise — After Action Report</div>
+    <div class="aar-round" style="color:var(--amber)">TRAINING</div>
+    <div class="aar-title">Practice round — not scored</div>
+  </div>
+  <div class="aar-sc aar-sc-c framed" style="border-color:rgba(251,191,36,.3)">
+    <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.2),transparent)"></div>
+    <div class="aar-sc-lbl">Practice score (not recorded)</div>
+    <div class="aar-sc-val" id="prac-score" style="color:var(--amber)">—</div>
+    <div class="aar-sc-sub" id="prac-score-sub">—</div>
+  </div>
+  <div class="aar-stats">
+    <div class="aar-stat"><div class="aar-stat-lbl">Convoys</div><div class="aar-stat-val" id="prac-c">—</div></div>
+    <div class="aar-stat"><div class="aar-stat-lbl">Scouts</div><div class="aar-stat-val"  id="prac-p">—</div></div>
+    <div class="aar-stat"><div class="aar-stat-lbl">Scout rate</div><div class="aar-stat-val" id="prac-rate">—</div></div>
+    <div class="aar-stat"><div class="aar-stat-lbl">Intel coverage</div><div class="aar-stat-val" id="prac-cov">—</div></div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--amber3);padding:11px 15px;font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.6;font-weight:400;width:100%;text-align:left">
+    This was a practice round. Your score and decisions were <strong style="color:var(--text)">not recorded</strong>. The scored mission will now begin.
+  </div>
+  <button class="btn btn-a" onclick="showScreen('screen-practice-done')">[ Continue to Mission Briefing ]</button>
+</div>
+
+<!-- ══ BREAK / AAR ══════════════════════════════════ -->
+<div id="screen-break" class="screen">
+  <div class="aar-hdr">
+    <div class="mil-badge" id="aar-badge">Round 1 — After Action Report</div>
+    <div class="aar-round" id="aar-round">Round 1</div>
+    <div class="aar-title" id="aar-sub">Round complete</div>
+  </div>
+  <div class="aar-sc aar-sc-c framed">
+    <div class="aar-sc-lbl">Round score</div>
+    <div class="aar-sc-val" id="aar-score">—</div>
+    <div class="aar-sc-sub" id="aar-score-sub">—</div>
+  </div>
+  <div class="aar-stats">
+    <div class="aar-stat"><div class="aar-stat-lbl">Convoys</div><div class="aar-stat-val" id="aar-c">—</div></div>
+    <div class="aar-stat"><div class="aar-stat-lbl">Scouts</div><div class="aar-stat-val"  id="aar-p">—</div></div>
+    <div class="aar-stat"><div class="aar-stat-lbl">Scout rate</div><div class="aar-stat-val" id="aar-rate">—</div></div>
+    <div class="aar-stat"><div class="aar-stat-lbl">Intel coverage</div><div class="aar-stat-val" id="aar-cov">—</div></div>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">Score per round</div>
+    <div class="chart-svg-wrap">
+      <svg class="chart-svg" id="chart-aar" viewBox="0 0 460 110" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+  </div>
+  <button class="btn btn-p" id="aar-next-btn" onclick="nextIteration()">[ Begin Round 2 ]</button>
+</div>
+
+<!-- ══ DISRUPTION ══════════════════════════════════ -->
+<div id="screen-disruption" class="screen">
+  <div class="dis-icon">⚡</div>
+  <div class="dis-title">Sitrep: Operational Change</div>
+  <div class="dis-body">Forward command reports a <strong>change in operational conditions</strong>. Zone demand levels have been reassigned across the grid.</div>
+  <div class="dis-detail">
+    <div class="dis-dtitle">Intelligence Assessment</div>
+    <div class="dis-item"><span class="dis-chev">▸</span><span>Demand levels have <strong>shifted for some zones</strong>. The magnitude of change varies by zone.</span></div>
+    <div class="dis-item"><span class="dis-chev">▸</span><span>Pre-disruption scout data will appear <strong>faded on the tactical map</strong> to indicate potentially outdated intelligence.</span></div>
+    <div class="dis-item"><span class="dis-chev">▸</span><span>Zone signal indicators remain unchanged. Their relationship to the <strong>new demand levels</strong> may differ from before.</span></div>
+  </div>
+  <div class="dis-note"><strong>Conditions are now stable.</strong> The remaining rounds will use the updated demand pattern.</div>
+  <button class="btn btn-a" id="dis-btn" onclick="nextIteration()" disabled style="opacity:.4;cursor:not-allowed">
+    [ Acknowledged — Continue <span id="dis-countdown">(5)</span> ]
+  </button>
+</div>
+
+<!-- ══ END ════════════════════════════════════════ -->
+<div id="screen-end" class="screen">
+  <div class="mil-badge">Mission Complete — Final Debrief</div>
+  <div class="end-title">After Action Report</div>
+  <div class="end-sc end-sc-c framed">
+    <div class="end-sc-lbl">Total score — all 20 rounds</div>
+    <div class="end-sc-val" id="end-score">—</div>
+    <div class="end-sc-sub" id="end-score-sub">—</div>
+  </div>
+  <div class="end-curve">
+    <div class="end-curve-title">Score per round</div>
+    <div class="chart-svg-wrap">
+      <svg class="chart-svg" id="chart-end" viewBox="0 0 460 120" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+  </div>
+  <div class="end-stats">
+    <div class="end-stat"><div class="end-stat-lbl">Total convoys</div><div class="end-stat-val" id="end-c">—</div></div>
+    <div class="end-stat"><div class="end-stat-lbl">Total scouts</div><div class="end-stat-val" id="end-p">—</div></div>
+    <div class="end-stat"><div class="end-stat-lbl">Overall scout rate</div><div class="end-stat-val" id="end-rate">—</div></div>
+    <div class="end-stat"><div class="end-stat-lbl">Pre-disruption avg</div><div class="end-stat-val" id="end-pre">—</div></div>
+    <div class="end-stat"><div class="end-stat-lbl">Post-disruption avg</div><div class="end-stat-val" id="end-post">—</div></div>
+    <div class="end-stat"><div class="end-stat-lbl">Avg decision time</div><div class="end-stat-val" id="end-lat">—</div></div>
+  </div>
+  <div class="end-debrief" id="end-debrief"></div>
+  <div class="end-actions">
+    <button class="btn btn-p" onclick="downloadData()">[ Export Session Data ]</button>
+    <button class="btn btn-g" onclick="location.reload()">[ New Session ]</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   TERRAIN SVG GENERATORS
+   Four terrain types, each with distinct visual
+   character at small tile sizes.
+
+   0 = Forest  (pre: tier 4-5, post: 1-2)
+   1 = River   (pre: tier 3-4, post: 2-3)
+   2 = Mountain(pre: tier 2-3, post: 3-4)
+   3 = Field   (pre: tier 1-2, post: 4-5)
+
+   Each generator takes (sz, intensity, depleted)
+   and returns an SVG string.
+   intensity 0-4 controls opacity/vibrancy.
+   Color palette stays in the green family but each
+   terrain has a secondary accent color:
+     Forest:   deep green canopy
+     River:    blue-green water
+     Mountain: grey-green rock
+     Field:    amber-green crops
+══════════════════════════════════════════════ */
+
+const TERRAIN_NAMES = ['Forest','River','Mountain','Field'];
+
+function terrainSvg(terrainType, intensity, sz, depleted) {
+  const op = [0.25, 0.42, 0.58, 0.75, 0.95][intensity];
+  const dim = depleted ? 0.5 : 1;
+  const a = (base) => Math.round(base * op * dim * 100) / 100;
+  const c = sz / 2;
+
+  if (terrainType === 0) {
+    // FOREST — three pine trees, varying heights
+    const g = `rgba(93,234,138,${a(0.9)})`;
+    const gs = `rgba(93,234,138,${a(1.0)})`;
+    const trunk = `rgba(93,234,138,${a(0.4)})`;
+    return `<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}">
+      <!-- left tree -->
+      <polygon points="${c-13},${c+8} ${c-20},${c+8} ${c-13},${c-4}" fill="${g}" stroke="${gs}" stroke-width=".8"/>
+      <polygon points="${c-13},${c+2} ${c-18},${c+2} ${c-13},${c-10}" fill="${g}" stroke="${gs}" stroke-width=".8"/>
+      <rect x="${c-14.5}" y="${c+8}" width="3" height="5" rx="1" fill="${trunk}"/>
+      <!-- center tree (tallest) -->
+      <polygon points="${c},${c+8} ${c-10},${c+8} ${c},${c-8}" fill="${gs}" stroke="${gs}" stroke-width="1"/>
+      <polygon points="${c},${c+1} ${c-8},${c+1} ${c},${c-14}" fill="${gs}" stroke="${gs}" stroke-width="1"/>
+      <rect x="${c-1.5}" y="${c+8}" width="3" height="6" rx="1" fill="${trunk}"/>
+      <!-- right tree -->
+      <polygon points="${c+13},${c+8} ${c+20},${c+8} ${c+13},${c-4}" fill="${g}" stroke="${gs}" stroke-width=".8"/>
+      <polygon points="${c+13},${c+2} ${c+18},${c+2} ${c+13},${c-10}" fill="${g}" stroke="${gs}" stroke-width=".8"/>
+      <rect x="${c+11.5}" y="${c+8}" width="3" height="5" rx="1" fill="${trunk}"/>
+    </svg>`;
+  }
+
+  if (terrainType === 1) {
+    // RIVER — flowing water with banks
+    const water = `rgba(96,165,250,${a(0.8)})`;
+    const waterH = `rgba(147,197,253,${a(0.6)})`;
+    const bank   = `rgba(93,234,138,${a(0.5)})`;
+    return `<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}">
+      <!-- upper bank -->
+      <path d="M${c-16},${c-10} Q${c-6},${c-14} ${c},${c-10} Q${c+6},${c-6} ${c+16},${c-10}"
+        fill="none" stroke="${bank}" stroke-width="2" stroke-linecap="round"/>
+      <!-- main river body -->
+      <path d="M${c-18},${c-6} Q${c-8},${c-10} ${c},${c-6} Q${c+8},${c-2} ${c+18},${c-6}
+               L${c+18},${c+6} Q${c+8},${c+2} ${c},${c+6} Q${c-8},${c+10} ${c-18},${c+6} Z"
+        fill="${water}" stroke="${waterH}" stroke-width=".8"/>
+      <!-- water highlight lines -->
+      <path d="M${c-10},${c-2} Q${c-2},${c-5} ${c+8},${c-2}"
+        fill="none" stroke="${waterH}" stroke-width="1" stroke-linecap="round" opacity=".7"/>
+      <path d="M${c-8},${c+2} Q${c},${c-1} ${c+10},${c+2}"
+        fill="none" stroke="${waterH}" stroke-width="1" stroke-linecap="round" opacity=".5"/>
+      <!-- lower bank -->
+      <path d="M${c-16},${c+10} Q${c-6},${c+14} ${c},${c+10} Q${c+6},${c+6} ${c+16},${c+10}"
+        fill="none" stroke="${bank}" stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+  }
+
+  if (terrainType === 2) {
+    // MOUNTAIN — two peaks with snow caps
+    const rock  = `rgba(134,148,124,${a(0.9)})`;
+    const rockL = `rgba(93,234,138,${a(0.3)})`;
+    const snow  = `rgba(220,230,215,${a(0.9)})`;
+    return `<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}">
+      <!-- back peak (left) -->
+      <polygon points="${c-6},${c+10} ${c-20},${c+10} ${c-6},${c-12}"
+        fill="${rockL}" stroke="${rock}" stroke-width=".8"/>
+      <!-- snow cap back -->
+      <polygon points="${c-6},${c-12} ${c-14},${c-2} ${c-6},${c-2}"
+        fill="${snow}" stroke="${snow}" stroke-width=".5" opacity="${a(0.7)}"/>
+      <!-- front peak (right, taller) -->
+      <polygon points="${c+6},${c+10} ${c-8},${c+10} ${c+6},${c-16}"
+        fill="${rock}" stroke="${rock}" stroke-width="1"/>
+      <!-- snow cap front -->
+      <polygon points="${c+6},${c-16} ${c-2},${c-4} ${c+6},${c-4}"
+        fill="${snow}" stroke="${snow}" stroke-width=".5"/>
+      <!-- ridge line highlight -->
+      <path d="M${c-20},${c+10} L${c-6},${c-12} L${c+1},${c-2}"
+        fill="none" stroke="${rock}" stroke-width=".5" opacity=".4"/>
+    </svg>`;
+  }
+
+  // FIELD — rows of crops / grass
+  const grass  = `rgba(93,234,138,${a(0.85)})`;
+  const grassL = `rgba(163,230,53,${a(0.6)})`;
+  const soil   = `rgba(93,234,138,${a(0.25)})`;
+  return `<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}">
+    <!-- soil base -->
+    <rect x="${c-18}" y="${c+2}" width="36" height="10" rx="2" fill="${soil}"/>
+    <!-- crop rows -->
+    ${[-14,-7,0,7,14].map(x => `
+      <line x1="${c+x}" y1="${c+12}" x2="${c+x}" y2="${c-4}" stroke="${grass}" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="${c+x}" cy="${c-6}" rx="3.5" ry="4.5" fill="${grass}"/>
+      <ellipse cx="${c+x-3}" cy="${c-2}" rx="2.5" ry="3" fill="${grassL}"/>
+      <ellipse cx="${c+x+3}" cy="${c-2}" rx="2.5" ry="3" fill="${grassL}"/>
+    `).join('')}
+    <!-- horizon line -->
+    <line x1="${c-18}" y1="${c+2}" x2="${c+18}" y2="${c+2}" stroke="${grass}" stroke-width=".8" opacity=".5"/>
+  </svg>`;
+}
+
+/* ══════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════ */
+const CFG = {
+  TOTAL_ITER:       20,
+  CYCLES:           10,
+  DISRUPTION_AFTER: 10,
+  GRID_COLS:        10,
+  PROBE_REWARD:     8,
+  COMMIT_MAX:       50,
+  COMMIT_MIN:       5,
+  CUE_RELIABILITY:  0.75,
+  SEED:             42,
+};
+
+/* Terrain-demand mapping (replaces shape-demand)
+   0=Forest  → pre:4-5, post:1-2
+   1=River   → pre:3-4, post:2-3
+   2=Mountain→ pre:2-3, post:3-4
+   3=Field   → pre:1-2, post:4-5  */
+const TERRAIN_DEMAND_PRE  = [[4,5],[3,4],[2,3],[1,2]];
+const TERRAIN_DEMAND_POST = [[1,2],[2,3],[3,4],[4,5]];
+
+const COL_LABELS  = ['A','B','C','D','E','F','G','H','I','J'];
+const ROW_LABELS  = ['1','2','3','4','5','6','7','8','9','10'];
+const DEMAND_LABELS = ['','V.Low','Low','Moderate','High','Critical'];
+const DEMAND_COLORS = ['','#3a5628','#4a7834','#d97706','#fb923c','#f87171'];
+const DEMAND_CLASS  = ['','d1','d2','d3','d4','d5'];
+const OPACITIES     = [0.13, 0.29, 0.50, 0.73, 1.0];
+
+function zoneName(i){ return COL_LABELS[i%CFG.GRID_COLS]+ROW_LABELS[Math.floor(i/CFG.GRID_COLS)]; }
+
+/* ══════════════════════════════════════════════
+   RNG
+══════════════════════════════════════════════ */
+function mkRng(s){let x=s>>>0;return ()=>{x=(Math.imul(1664525,x)+1013904223)>>>0;return x/0x100000000;};}
+const rng=mkRng(CFG.SEED);
+const rngLive=mkRng((Date.now()^0xbada55)&0xffffffff);
+
+/* ══════════════════════════════════════════════
+   SESSION STATE
+══════════════════════════════════════════════ */
+const SS={
+  iter:0,cycleInIter:0,
+  iterScore:0,totalScore:0,
+  iterC:0,iterP:0,totalC:0,totalP:0,commitHits:0,
+  sectors:[],iterDepletion:[],
+  // Per-zone cumulative commit count across ALL rounds (for cross-round exploitation measure)
+  zoneCommitHistory:[],
+  truckPos:null,selectedIdx:null,
+  iterLog:[],trialLog:[],
+  iterStart:null,trialStart:null,
+  // Zone-selection timing: when player clicked the tile (before modal opens)
+  tileClickTime:null,
+  // Modal open time
+  modalOpenTime:null,
+  // Zones visited (tile clicks) this round, including dismissals
+  zonesVisitedThisRound:[],
+  // Catch trial tracking
+  catchTrials:[],
+  // Practice mode flag — when true, nothing is logged to trialLog
+  isPractice:false,
+  // Session identity
+  sessionId:null,
+  sessionComplete:false,
+  disrupted:false,sessionStart:null,
+};
+
+/* ══════════════════════════════════════════════
+   SECTOR INIT
+══════════════════════════════════════════════ */
+function initSectors(){
+  const n=CFG.GRID_COLS*CFG.GRID_COLS; // 100
+  // 25 of each terrain type (4 × 25 = 100)
+  const terrainPool=[];
+  for(let t=0;t<4;t++) for(let k=0;k<25;k++) terrainPool.push(t);
+  for(let i=terrainPool.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[terrainPool[i],terrainPool[j]]=[terrainPool[j],terrainPool[i]];}
+  return Array.from({length:n},(_,i)=>{
+    const terrain=terrainPool[i];
+    const[pMin,pMax]=TERRAIN_DEMAND_PRE[terrain];
+    const[qMin,qMax]=TERRAIN_DEMAND_POST[terrain];
+    const base    =pMin+Math.floor(rng()*(pMax-pMin+1));
+    const postBase=qMin+Math.floor(rng()*(qMax-qMin+1));
+    // Cue intensity: still based on demand tier (terrain IS the shape signal now)
+    const cueInt=rng()<CFG.CUE_RELIABILITY
+      ? base-1
+      : Math.max(0,Math.min(4,(base-1)+(rng()<.5?-1:1)));
+    return{
+      id:i,name:zoneName(i),terrain,
+      baseDemand:Math.max(1,Math.min(5,base)),
+      postDemand:Math.max(1,Math.min(5,postBase)),
+      cueInt,probeHistory:[],scouted:false,
+    };
+  });
+}
+
+function baseDemandNow(sec){return SS.disrupted?sec.postDemand:sec.baseDemand;}
+function effectiveDemand(sec){return Math.max(1,baseDemandNow(sec)-(SS.iterDepletion[sec.id]||0)*2);}
+function isDepleted(sec){return(SS.iterDepletion[sec.id]||0)>0;}
+function scoutedCount(){return SS.sectors.filter(s=>s.scouted).length;}
+function intelPct(){return Math.round(scoutedCount()/SS.sectors.length*100);}
+
+/* ══════════════════════════════════════════════
+   ADJACENCY
+══════════════════════════════════════════════ */
+function adjacentTo(idx){
+  const G=CFG.GRID_COLS,r=Math.floor(idx/G),c=idx%G,res=new Set();
+  for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+    if(dr===0&&dc===0) continue;
+    const nr=r+dr,nc=c+dc;
+    if(nr>=0&&nr<G&&nc>=0&&nc<G) res.add(nr*G+nc);
+  }
+  return res;
+}
+function isValidDeploy(idx){return SS.truckPos===null||adjacentTo(SS.truckPos).has(idx);}
+
+/* ══════════════════════════════════════════════
+   RENDER GRID
+══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   TERRAIN SVG CACHE
+   terrainSvg() is expensive (string template).
+   Cache the 4×5×2 = 40 possible combinations
+   so each unique combo is only computed once.
+══════════════════════════════════════════════ */
+const _svgCache = {};
+function cachedTerrainSvg(terrain, cueInt, sz, depleted){
+  const k = `${terrain}|${cueInt}|${sz}|${depleted?1:0}`;
+  if(!_svgCache[k]) _svgCache[k] = terrainSvg(terrain, cueInt, sz, depleted);
+  return _svgCache[k];
+}
+
+/* ══════════════════════════════════════════════
+   BUILD SINGLE TILE ELEMENT
+   Extracted from renderGrid so it can be called
+   for individual tile rebuilds without a full
+   grid teardown.
+══════════════════════════════════════════════ */
+const TRUCK_SVG = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="5" width="10" height="6" rx="1" fill="rgba(96,165,250,.9)" stroke="rgba(96,165,250,1)" stroke-width=".5"/><rect x="11" y="6" width="4" height="4" rx=".5" fill="rgba(96,165,250,.7)" stroke="rgba(96,165,250,.9)" stroke-width=".5"/><circle cx="4" cy="11.5" r="1.5" fill="rgba(96,165,250,1)"/><circle cx="10" cy="11.5" r="1.5" fill="rgba(96,165,250,1)"/></svg>`;
+
+function buildTileElement(i, adjSet, isFirstDeploy){
+  const sec = SS.sectors[i];
+  const eff = effectiveDemand(sec);
+  const dep = isDepleted(sec);
+  const isTruck   = SS.truckPos === i;
+  const isAdj     = adjSet && adjSet.has(i);
+  const isBlocked = SS.truckPos !== null && !isAdj && !isTruck;
+
+  let cls = 'sector';
+  if(!sec.scouted) cls += ' unknown';
+  else { cls += ' ' + DEMAND_CLASS[eff]; if(dep) cls += ' depleted'; }
+  if(isTruck)        cls += ' truck-here';
+  else if(isAdj)     cls += ' adj-valid';
+  else if(isBlocked) cls += ' adj-blocked';
+  else if(isFirstDeploy) cls += ' free-deploy';
+
+  const tile = document.createElement('div');
+  tile.className = cls; tile.id = `tile-${i}`;
+  tile.onclick = () => handleTileClick(i);
+
+  if(!sec.scouted){
+    const ic = document.createElement('div'); ic.className='unk-icon'; ic.textContent='?';
+    const sb = document.createElement('div'); sb.className='unk-sub';  sb.textContent='CLSFD';
+    tile.appendChild(ic); tile.appendChild(sb);
+  } else {
+    const wrap = document.createElement('div');
+    wrap.className = 'terrain-svg'; wrap.style.cssText = 'width:40px;height:40px';
+    wrap.innerHTML = cachedTerrainSvg(sec.terrain, sec.cueInt, 40, dep);
+    tile.appendChild(wrap);
+    const nm = document.createElement('div'); nm.className='sector-nm'; nm.textContent=sec.name;
+    tile.appendChild(nm);
+    const badge = document.createElement('div');
+    badge.className = 'eff-badge'; badge.textContent = eff+'/5'; badge.style.color = DEMAND_COLORS[eff];
+    tile.appendChild(badge);
+  }
+
+  const depBar = document.createElement('div'); depBar.className='dep-bar'; tile.appendChild(depBar);
+
+  if(sec.probeHistory.length > 0){
+    const hist = document.createElement('div'); hist.className='s-hist';
+    sec.probeHistory.slice(-4).forEach(h=>{
+      const dot = document.createElement('div');
+      dot.className = 'h-dot'+(SS.disrupted&&!h.postDisruption?' stale':'');
+      dot.style.background = DEMAND_COLORS[h.demand];
+      hist.appendChild(dot);
+    });
+    tile.appendChild(hist);
+  }
+
+  if(isTruck){
+    const tk = document.createElement('div'); tk.className='truck-icon'; tk.innerHTML=TRUCK_SVG;
+    tile.appendChild(tk);
+  }
+
+  const ov  = document.createElement('div'); ov.className='s-ov'; ov.id=`ov-${i}`;
+  const ovD = document.createElement('div'); ovD.className='ov-d'; ov.appendChild(ovD);
+  const ovL = document.createElement('div'); ovL.className='ov-l'; ov.appendChild(ovL);
+  tile.appendChild(ov);
+
+  return tile;
+}
+
+/* ══════════════════════════════════════════════
+   RENDER GRID  (full rebuild — used at round
+   starts and session init only)
+══════════════════════════════════════════════ */
+function renderGrid(){
+  // Coordinate labels — only rebuild if column count changed (essentially never)
+  const colRow = document.getElementById('col-lbls');
+  if(colRow.childElementCount !== COL_LABELS.length){
+    colRow.innerHTML = '';
+    COL_LABELS.forEach(l=>{const d=document.createElement('div');d.className='clbl col';d.textContent=l;colRow.appendChild(d);});
+  }
+  const rowCol = document.getElementById('row-lbls');
+  if(rowCol.childElementCount !== ROW_LABELS.length){
+    rowCol.innerHTML = '';
+    ROW_LABELS.forEach(l=>{const d=document.createElement('div');d.className='clbl row';d.textContent=l;rowCol.appendChild(d);});
+  }
+
+  const adjSet       = SS.truckPos !== null ? adjacentTo(SS.truckPos) : null;
+  const isFirstDeploy= SS.truckPos === null;
+  const grid         = document.getElementById('sector-grid');
+  grid.innerHTML     = '';
+
+  SS.sectors.forEach((_, i) => {
+    grid.appendChild(buildTileElement(i, adjSet, isFirstDeploy));
+  });
+
+  updateConvoyStrip();
+}
+
+/* ══════════════════════════════════════════════
+   PATCH GRID  (targeted — called after each
+   in-round action instead of full rebuild)
+
+   probe:  rebuild only the 1 probed tile
+   commit: update depletion on the deployed tile,
+           sweep adjacency classes across all tiles,
+           move truck icon — no tile recreation
+══════════════════════════════════════════════ */
+function patchGridAfterAction(action, idx){
+  if(action === 'probe'){
+    // One tile changed: unknown → known. Replace it.
+    const adjSet        = SS.truckPos !== null ? adjacentTo(SS.truckPos) : null;
+    const isFirstDeploy = SS.truckPos === null;
+    const old = document.getElementById(`tile-${idx}`);
+    if(old) old.replaceWith(buildTileElement(idx, adjSet, isFirstDeploy));
+    // Re-apply tutorial pulse if active
+    if(TUT_STATE.active){
+      const step = TUT_STEPS[TUT_STATE.step];
+      if(step && step.pulse === 'last-scouted' && TUT_STATE.lastScoutedIdx === idx){
+        const t = document.getElementById(`tile-${idx}`);
+        if(t) t.classList.add('tut-pulse');
+      }
+    }
+  } else {
+    // Commit: only class/badge changes — no element recreation needed.
+    // 1. Update depletion state on the deployed tile
+    _patchTileDepletion(idx);
+    // 2. Update truck icon: remove from old position, add to new
+    _patchTruckIcon(idx);
+    // 3. Sweep adjacency classes across all 100 tiles (cheap — just classList ops)
+    _patchAdjacency();
+    // 4. Update convoy status bar
+    updateConvoyStrip();
+  }
+}
+
+function _patchTileDepletion(idx){
+  const tile = document.getElementById(`tile-${idx}`);
+  if(!tile || !SS.sectors[idx].scouted) return;
+  const sec = SS.sectors[idx];
+  const eff = effectiveDemand(sec);
+  const dep = isDepleted(sec);
+  // Demand class
+  tile.classList.remove('d1','d2','d3','d4','d5');
+  tile.classList.add(DEMAND_CLASS[eff]);
+  // Depleted flag
+  dep ? tile.classList.add('depleted') : tile.classList.remove('depleted');
+  // Badge
+  const badge = tile.querySelector('.eff-badge');
+  if(badge){ badge.textContent = eff+'/5'; badge.style.color = DEMAND_COLORS[eff]; }
+}
+
+function _patchTruckIcon(newIdx){
+  // Remove all existing truck icons
+  document.querySelectorAll('.truck-icon').forEach(t => t.remove());
+  // Add to new position
+  const tile = document.getElementById(`tile-${newIdx}`);
+  if(!tile) return;
+  const tk = document.createElement('div'); tk.className='truck-icon'; tk.innerHTML=TRUCK_SVG;
+  const ov = tile.querySelector('.s-ov');
+  ov ? tile.insertBefore(tk, ov) : tile.appendChild(tk);
+}
+
+function _patchAdjacency(){
+  const adjSet       = SS.truckPos !== null ? adjacentTo(SS.truckPos) : null;
+  const isFirstDeploy= SS.truckPos === null;
+  SS.sectors.forEach((_, i) => {
+    const tile = document.getElementById(`tile-${i}`);
+    if(!tile) return;
+    const isTruck   = SS.truckPos === i;
+    const isAdj     = adjSet && adjSet.has(i);
+    const isBlocked = !isFirstDeploy && !isAdj && !isTruck;
+    tile.classList.remove('truck-here','adj-valid','adj-blocked','free-deploy');
+    if(isTruck)        tile.classList.add('truck-here');
+    else if(isAdj)     tile.classList.add('adj-valid');
+    else if(isBlocked) tile.classList.add('adj-blocked');
+    else if(isFirstDeploy) tile.classList.add('free-deploy');
+  });
+}
+
+/* ══════════════════════════════════════════════
+   TILE CLICK
+══════════════════════════════════════════════ */
+function handleTileClick(idx){
+  if(SS.cycleInIter>=CFG.CYCLES) return;
+
+  const sec=SS.sectors[idx];
+  const eligible=isValidDeploy(idx);
+
+  // ── Tutorial restrictions ──────────────────────────────
+  if(TUT_STATE.active){
+    const step=TUT_STEPS[TUT_STATE.step];
+
+    // Button steps: grid is fully locked, no interactions
+    if(step.type==='button') return;
+
+    if(step.type==='probe'){
+      // Only allow clicking unknown zones (scouting)
+      // Scouted zones are off-limits during scout steps
+      if(sec.scouted) return;
+    }
+
+    if(step.type==='commit'){
+      // Step 3 (index 3): only the last-scouted zone is valid
+      if(TUT_STATE.step===3 && idx!==TUT_STATE.lastScoutedIdx) return;
+      // Step 5 (index 5): only adjacent zones are valid
+      if(TUT_STATE.step===5 && !eligible) return;
+      // Blocked zones always blocked for commit
+      if(!eligible) return;
+    }
+  }
+  // ──────────────────────────────────────────────────────
+
+  // Scouted + convoy-blocked → nothing to do
+  if(sec.scouted && !eligible) return;
+
+  // Common bookkeeping
+  SS.selectedIdx=idx;
+  SS.tileClickTime=Date.now();
+  SS.modalOpenTime=Date.now();
+  SS.trialStart=Date.now();
+  SS.zonesVisitedThisRound.push({zone_id:idx,zone:sec.name,t:Date.now()});
+
+  // Auto-deploy: scouted AND eligible → skip modal
+  if(sec.scouted && eligible){
+    resolveAction('commit');
+    return;
+  }
+
+  // Modal: unknown zones (scout or blind deploy choice)
+  openModal(idx);
+}
+
+/* ══════════════════════════════════════════════
+   OPEN MODAL
+══════════════════════════════════════════════ */
+function openModal(idx){
+  const sec=SS.sectors[idx];
+  document.querySelectorAll('.sector').forEach(t=>t.classList.remove('selected'));
+  document.getElementById(`tile-${idx}`)?.classList.add('selected');
+
+  document.getElementById('m-name').textContent=`Zone ${sec.name}`;
+  document.getElementById('m-zone-q').textContent=`Zone ${sec.name}`;
+
+  // Modal terrain / icon
+  const mTerrain=document.getElementById('m-terrain');
+  if(sec.scouted){
+    mTerrain.innerHTML=cachedTerrainSvg(sec.terrain,sec.cueInt,46,false);
+    const intWords=['very weak','weak','moderate','strong','very strong'];
+    document.getElementById('m-sig').textContent=
+      `Terrain: ${TERRAIN_NAMES[sec.terrain]}, signal ${intWords[sec.cueInt]}`;
+    const eff=effectiveDemand(sec);
+    const dep=SS.iterDepletion[idx]||0;
+    const mDem=document.getElementById('m-demand');
+    mDem.textContent=`Current demand: ${eff}/5 — ${DEMAND_LABELS[eff]}`+(dep>0?` (−${dep*2} from ${dep} deploy${dep>1?'s':''})`:'');
+    mDem.style.color=dep>0?'var(--amber)':DEMAND_COLORS[eff];
+    const ePts=Math.round(CFG.COMMIT_MIN+((eff-1)/4)*(CFG.COMMIT_MAX-CFG.COMMIT_MIN));
+    document.getElementById('m-commit-pts').textContent=`~+${ePts} pts if deployed now`;
+  } else {
+    // Unknown zone — show question mark
+    mTerrain.innerHTML=`<svg width="46" height="46" viewBox="0 0 46 46"><text x="23" y="30" text-anchor="middle" font-family="Orbitron" font-size="22" font-weight="700" fill="#1e3a10">?</text></svg>`;
+    document.getElementById('m-sig').textContent='Terrain: CLASSIFIED — scout to reveal';
+    document.getElementById('m-demand').textContent='';
+    document.getElementById('m-commit-pts').textContent='+5 to +50 pts';
+  }
+
+  const last=sec.probeHistory.at(-1);
+  let histTxt='No scout data on record';
+  if(last){
+    const stale=SS.disrupted&&!last.postDisruption?' ⚠ pre-disruption':'';
+    histTxt=`Last scout R${last.iteration}/C${last.cycle}: demand ${last.demand}/5 — ${DEMAND_LABELS[last.demand]}${stale}`;
+  }
+  document.getElementById('m-hist').textContent=histTxt;
+
+  // Convoy constraint
+  const deployBtn=document.getElementById('ch-deploy');
+  const convoyNote=document.getElementById('m-convoy-note');
+  const valid=isValidDeploy(idx);
+  const isTruck=SS.truckPos===idx;
+  const scoutBtn=document.querySelector('.ch-btn.sct');
+
+  // During tutorial probe steps, only scouting is allowed — hide deploy entirely
+  const tutProbeOnly = TUT_STATE.active && TUT_STEPS[TUT_STATE.step]?.type==='probe';
+
+  if(!valid || tutProbeOnly){
+    deployBtn.style.display='none';
+    scoutBtn.classList.add('sct-only');
+    convoyNote.style.display = (!valid && !tutProbeOnly) ? 'block' : 'none';
+    if(!valid && !tutProbeOnly)
+      convoyNote.textContent=`Convoy cannot reach Zone ${sec.name} — not adjacent to current position (Zone ${SS.sectors[SS.truckPos].name}). Scouting is still available.`;
+  } else {
+    deployBtn.style.display='';
+    scoutBtn.classList.remove('sct-only');
+    if(SS.truckPos!==null&&!isTruck){
+      convoyNote.style.display='block';
+      convoyNote.textContent=`Zone ${sec.name} is adjacent to convoy — deployment available.`;
+    } else {
+      convoyNote.style.display='none';
+    }
+  }
+
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.querySelectorAll('.sector').forEach(t=>t.classList.remove('selected'));
+  SS.selectedIdx=null;
+}
+
+/* ══════════════════════════════════════════════
+   CONVOY STRIP
+══════════════════════════════════════════════ */
+function updateConvoyStrip(){
+  const msg=document.getElementById('convoy-msg');
+  if(SS.truckPos===null){
+    msg.innerHTML=`<span class="free">Undeployed</span> — first deployment may target any zone`;
+  } else {
+    const zn=SS.sectors[SS.truckPos].name;
+    msg.innerHTML=`At <strong>${zn}</strong> — <span class="locked">next deployment must be adjacent</span>`;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   RESOLVE ACTION
+══════════════════════════════════════════════ */
+function resolveAction(action){
+  const idx=SS.selectedIdx;
+  if(idx===null) return;
+  const sec=SS.sectors[idx];
+  const latency=Date.now()-SS.trialStart;
+  closeModal();
+
+  const effDemand=effectiveDemand(sec);
+  let pts=0,toastMsg='',tone='ok',popupDetail='';
+  let revealedDemand=effDemand;
+
+  if(action==='commit'){
+    if(!isValidDeploy(idx)){return;}
+    pts=Math.round(CFG.COMMIT_MIN+((effDemand-1)/4)*(CFG.COMMIT_MAX-CFG.COMMIT_MIN));
+    SS.iterC++;SS.totalC++;
+    if(effDemand>=3){SS.commitHits++;tone='good';}
+    SS.truckPos=idx;
+    SS.iterDepletion[idx]=(SS.iterDepletion[idx]||0)+1;
+    const newEff=effectiveDemand(sec);
+    toastMsg=`CONVOY → Zone ${sec.name} · Demand ${effDemand}/5 · +${pts}`;
+    if(newEff<effDemand) toastMsg+=` · Zone now ${newEff}/5`;
+    popupDetail=`Demand ${effDemand}/5 — ${DEMAND_LABELS[effDemand]}`+(newEff<effDemand?` · reduced to ${newEff}/5`:'');
+  } else {
+    pts=CFG.PROBE_REWARD;
+    revealedDemand=baseDemandNow(sec);
+    sec.scouted=true;
+    sec.probeHistory.push({iteration:SS.iter,cycle:SS.cycleInIter+1,demand:revealedDemand,postDisruption:SS.disrupted});
+    SS.iterP++;SS.totalP++;
+    tone='info';
+    toastMsg=`SCOUT → Zone ${sec.name} · Demand: ${revealedDemand}/5 · +${pts}`;
+    popupDetail=`Demand confirmed: ${revealedDemand}/5 — ${DEMAND_LABELS[revealedDemand]}`;
+  }
+
+  SS.iterScore+=pts;SS.totalScore+=pts;SS.cycleInIter++;
+
+  // ── Derived behavioral variables ──────────────────────────────
+  const G = CFG.GRID_COLS;
+  const truckR = SS.truckPos!==null ? Math.floor(SS.truckPos/G) : null;
+  const truckC = SS.truckPos!==null ? SS.truckPos%G : null;
+  const zoneR  = Math.floor(idx/G), zoneC = idx%G;
+  const chevDist = truckR!==null
+    ? Math.max(Math.abs(zoneR-truckR), Math.abs(zoneC-truckC))
+    : null;
+
+  // Cross-round exploitation: has this zone been committed to in any PRIOR round?
+  const prevCommits = SS.zoneCommitHistory[idx] || 0;
+  const isPrevExploited = action==='commit' && prevCommits > 0;
+
+  // Consecutive commits to same zone THIS round
+  const recentCommits = SS.trialLog.slice().reverse()
+    .filter(t=>t.iteration===SS.iter)
+    .takeWhile ? [] // takeWhile not standard; use reduce below
+    : [];
+  let consecSameZone = 0;
+  for(let i=SS.trialLog.length-1;i>=0;i--){
+    const t=SS.trialLog[i];
+    if(t.iteration!==SS.iter||t.action!=='commit') break;
+    if(t.zone_id===idx) consecSameZone++;
+    else break;
+  }
+
+  // Catch trial detection: is there an adjacent scouted high-demand zone?
+  // Flag if: iter>=5, action taken, there exists an adj zone scouted with eff demand>=4
+  let isCatchTrial=false, catchCorrect=null;
+  if(!SS.isPractice && SS.iter>=5 && action==='commit'){
+    const adjSet2=adjacentTo(idx);
+    const highAdj=[...adjSet2].filter(ai=>{
+      const as=SS.sectors[ai];
+      return as.scouted && effectiveDemand(as)>=4 && effectiveDemand(as)>effDemand;
+    });
+    if(highAdj.length>0){
+      isCatchTrial=true;
+      // "correct" = they deployed somewhere with eff demand>=4
+      catchCorrect=effDemand>=4;
+    }
+  }
+  // Also flag as catch trial opportunity if player chose low-demand commit
+  // when a high-demand scouted zone was available anywhere adjacent to truck
+  if(!SS.isPractice && SS.iter>=5 && action==='commit' && SS.truckPos!==null){
+    const adjToTruck=adjacentTo(SS.truckPos);
+    adjToTruck.add(SS.truckPos);
+    const highAvail=[...adjToTruck].filter(ai=>{
+      const as=SS.sectors[ai];
+      return as.scouted && effectiveDemand(as)>=4;
+    });
+    if(highAvail.length>0 && effDemand<=2){
+      isCatchTrial=true;catchCorrect=false;
+    }
+  }
+  if(isCatchTrial) SS.catchTrials.push({trial_global:(SS.iter-1)*CFG.CYCLES+SS.cycleInIter,catch_correct:catchCorrect});
+
+  // Modal duration
+  const modalDuration = SS.modalOpenTime ? Date.now()-SS.modalOpenTime : null;
+  // Time from last action (or round start) to tile click
+  const timeToZoneSelect = SS.tileClickTime && SS.modalOpenTime
+    ? SS.tileClickTime - (SS.trialLog.length>0 && SS.trialLog[SS.trialLog.length-1].iteration===SS.iter
+        ? SS.trialLog[SS.trialLog.length-1]._modal_close_time||SS.iterStart
+        : SS.iterStart)
+    : null;
+
+  // Only push to trialLog in non-practice mode
+  if(!SS.isPractice){
+    // Update cross-round commit history
+    if(action==='commit') SS.zoneCommitHistory[idx]=(SS.zoneCommitHistory[idx]||0)+1;
+
+    const trialRecord = {
+      session_id:           SS.sessionId,
+      trial_global:         (SS.iter-1)*CFG.CYCLES+SS.cycleInIter,
+      iteration:            SS.iter,
+      cycle_in_iter:        SS.cycleInIter,
+      // Zone identity
+      zone:                 sec.name,
+      zone_id:              idx,
+      zone_row:             zoneR,
+      zone_col:             zoneC,
+      zone_terrain:         TERRAIN_NAMES[sec.terrain],
+      // Action
+      action,
+      // Demand
+      base_demand:          baseDemandNow(sec),
+      effective_demand:     effDemand,
+      depletion_count_this_round: SS.iterDepletion[idx]||0,
+      // Points
+      points:               pts,
+      // Timing
+      latency_ms:           latency,           // modal open → decision
+      modal_duration_ms:    modalDuration,
+      time_to_zone_select_ms: timeToZoneSelect, // prev action close → tile click
+      // Spatial
+      truck_pos_before:     action==='commit'?(SS.truckPos===idx?null:SS.truckPos):SS.truckPos,
+      truck_pos_after:      action==='commit'?idx:SS.truckPos,
+      chebyshev_dist_from_truck: chevDist,
+      // Intel state
+      zone_was_scouted:     sec.scouted,
+      probe_history_n:      sec.probeHistory.length,
+      intel_coverage_pct:   intelPct(),
+      // Cross-round exploitation
+      cumulative_commits_to_zone: prevCommits,
+      zone_previously_exploited:  isPrevExploited,
+      // Within-round
+      consecutive_same_zone_commits: consecSameZone,
+      // Running scores
+      score_iter_running:   SS.iterScore,
+      score_total_running:  SS.totalScore,
+      // Rates
+      disrupted:            SS.disrupted,
+      explore_rate_iter:    SS.cycleInIter>0?SS.iterP/SS.cycleInIter:0,
+      explore_rate_10:      rollingRate(10),
+      // Catch trial
+      is_catch_trial:       isCatchTrial,
+      catch_correct:        catchCorrect,
+      // Internal timing marker for next trial's time_to_zone_select calc
+      _modal_close_time:    Date.now(),
+    };
+    SS.trialLog.push(trialRecord);
+  }
+
+  // Flash overlay
+  const ov=document.getElementById(`ov-${idx}`);
+  const dispD=action==='commit'?effDemand:revealedDemand;
+  ov.querySelector('.ov-d').textContent=dispD+'/5';
+  ov.querySelector('.ov-l').textContent=DEMAND_LABELS[dispD];
+  ov.style.background=dispD>=4?'rgba(239,68,68,.35)':dispD===3?'rgba(217,119,6,.3)':'rgba(14,24,10,.8)';
+  ov.querySelector('.ov-d').style.color=DEMAND_COLORS[dispD];
+  ov.querySelector('.ov-l').style.color=DEMAND_COLORS[dispD];
+  ov.classList.add('show');
+  document.getElementById(`tile-${idx}`).classList.add('resolving');
+  // Capture action for closure — patch only affected tiles instead of full rebuild
+  const _action = action, _idx = idx;
+  setTimeout(()=>{
+    ov.classList.remove('show');
+    document.getElementById(`tile-${_idx}`)?.classList.remove('resolving');
+    patchGridAfterAction(_action, _idx);
+  },900);
+
+  updateHud();
+  showToast(toastMsg,tone);
+  showPointsPopup(action,`Zone ${sec.name}`,pts,popupDetail,effDemand);
+
+  // Determine overlay color: probe=purple, high commit=green, mid=amber, low=dim green
+  const overlayColor = action==='probe'
+    ? 'var(--purple)'
+    : effDemand>=4 ? 'var(--accent)'
+    : effDemand===3 ? 'var(--amber)'
+    : 'var(--text2)';
+  const overlayLabel = action==='probe'
+    ? `${TERRAIN_NAMES[sec.terrain]} scouted`
+    : DEMAND_LABELS[effDemand];
+  showMapOverlay(pts, overlayLabel, `Zone ${sec.name}`, overlayColor);
+
+  // Advance guided tutorial if active
+  if(TUT_STATE.active) advanceTutorial(action, idx);
+
+  if(SS.cycleInIter>=CFG.CYCLES) setTimeout(endIteration,1100);
+}
+
+function rollingRate(w){
+  const r=SS.trialLog.slice(-w);
+  return r.length?+(r.filter(t=>t.action==='probe').length/r.length).toFixed(3):null;
+}
+
+/* ══════════════════════════════════════════════
+   ROUND TRACKER PIPS
+══════════════════════════════════════════════ */
+let _pipsLastIter = -1;
+function renderPips(){
+  // Pips only change at round boundaries — skip if iteration hasn't changed
+  if(SS.iter === _pipsLastIter) return;
+  _pipsLastIter = SS.iter;
+  const c=document.getElementById('rt-pips');c.innerHTML='';
+  for(let i=1;i<=CFG.TOTAL_ITER;i++){
+    if(i===CFG.DISRUPTION_AFTER+1){
+      const dis=document.createElement('div');dis.className='rt-dis';
+      const db=document.createElement('div');db.className='rt-dis-bar';dis.appendChild(db);
+      const dl=document.createElement('div');dl.className='rt-dis-lbl';dl.textContent=SS.disrupted?'⚡':' ';dis.appendChild(dl);
+      c.appendChild(dis);
+    }
+    const pip=document.createElement('div');pip.className='rt-pip';
+    const bar=document.createElement('div');bar.className='rt-bar';
+    const sc=document.createElement('div');sc.className='rt-score';
+    if(i<SS.iter){
+      bar.classList.add('done');if(i>CFG.DISRUPTION_AFTER)bar.classList.add('post');
+      const d=SS.iterLog.find(l=>l.iteration===i);
+      if(d){sc.textContent=d.score;sc.classList.add('filled');if(i>CFG.DISRUPTION_AFTER)sc.classList.add('post');}
+    }else if(i===SS.iter){bar.classList.add('current');sc.textContent='…';}
+    pip.appendChild(bar);pip.appendChild(sc);
+    c.appendChild(pip);
+  }
+  document.getElementById('rt-curr').innerHTML=`<strong>${SS.iter}</strong> / ${CFG.TOTAL_ITER}`;
+}
+
+/* ══════════════════════════════════════════════
+   HUD
+══════════════════════════════════════════════ */
+function updateHud(){
+  document.getElementById('hud-iter').textContent=SS.iterScore;
+  document.getElementById('hud-total').textContent=SS.totalScore;
+  document.getElementById('hud-c').textContent=SS.iterC;
+  document.getElementById('hud-p').textContent=SS.iterP;
+  document.getElementById('hud-cov').textContent=intelPct()+'%';
+  document.getElementById('prog').style.width=(SS.cycleInIter/CFG.CYCLES*100)+'%';
+  document.getElementById('prog-lbl').textContent=`Decision ${SS.cycleInIter} of ${CFG.CYCLES}`;
+  renderPips();
+}
+
+/* ══════════════════════════════════════════════
+   POINTS POPUP
+══════════════════════════════════════════════ */
+/* Points popup — persistent, updates on each action, never fades */
+function showPointsPopup(action,zn,pts,detail,dem){
+  const pp=document.getElementById('pts-popup');
+  let tone='tone-commit';
+  if(action==='probe') tone='tone-probe';
+  else if(dem<=2) tone='tone-low';
+  pp.className='pts-popup '+tone;
+  document.getElementById('pp-action').textContent=action==='commit'?'▸ Convoy deployed':'▸ Scout returned';
+  document.getElementById('pp-zone').textContent=zn;
+  document.getElementById('pp-pts').textContent='+'+pts+' pts';
+  document.getElementById('pp-detail').textContent=detail;
+}
+
+/* Map overlay — large pts number floats over the grid briefly */
+let msoTimer=null;
+function showMapOverlay(pts,label,zone,color){
+  const ov    = document.getElementById('map-score-overlay');
+  const ptsEl = document.getElementById('mso-pts');
+  const lblEl = document.getElementById('mso-label');
+  const znEl  = document.getElementById('mso-zone');
+
+  clearTimeout(msoTimer);
+  ov.style.transition='opacity .12s ease';
+  ov.style.opacity='0';
+
+  ptsEl.textContent = '+'+pts+' pts';
+  ptsEl.style.color = color;
+  lblEl.textContent = label;
+  lblEl.style.color = color;
+  znEl.textContent  = zone;
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      ov.style.opacity='1';
+      // Hold 1.0s, then fade over 0.35s
+      msoTimer=setTimeout(()=>{
+        ov.style.transition='opacity .35s ease';
+        ov.style.opacity='0';
+      },1000);
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════
+   LINE CHART
+   Renders an SVG score-vs-round line chart.
+   svgId    : id of the <svg> element
+   scores   : array of completed round scores (length 1..20)
+   curIdx   : index of the just-completed round (0-based)
+   showDis  : whether to label the disruption marker
+   Full 20-round x-axis always shown; unscored rounds
+   appear as empty space on the right.
+══════════════════════════════════════════════ */
+function renderLineChart(svgId, scores, curIdx, showDis){
+  const svg = document.getElementById(svgId);
+  if(!svg) return;
+  svg.innerHTML = '';
+
+  const W=460, H=parseInt(svg.getAttribute('viewBox').split(' ')[3]);
+  const PAD = {top:12, right:18, bottom:28, left:36};
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top  - PAD.bottom;
+
+  const TOTAL = CFG.TOTAL_ITER;  // 20
+  const DIS   = CFG.DISRUPTION_AFTER; // 10
+
+  // Y scale: 0 → nice ceiling above max observed score
+  // Y axis always 0–500 (theoretical max = 10 decisions × 50 pts)
+  const yMax = CFG.CYCLES * CFG.COMMIT_MAX; // 500
+
+  function xOf(round){ // round is 1-based
+    return PAD.left + ((round - 1) / (TOTAL - 1)) * cW;
+  }
+  function yOf(score){
+    return PAD.top + cH - (score / yMax) * cH;
+  }
+
+  const ns = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent){
+    const e = document.createElementNS(ns, tag);
+    for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+    if(parent) parent.appendChild(e);
+    return e;
+  }
+  function txt(content, attrs, parent){
+    const e = el('text', attrs, parent);
+    e.textContent = content;
+    return e;
+  }
+
+  // ── Background rect ──────────────────────────────────────────
+  el('rect',{x:0,y:0,width:W,height:H,fill:'transparent'},svg);
+
+  // ── Y grid lines + labels ────────────────────────────────────
+  const yTicks = 4;
+  for(let i=0;i<=yTicks;i++){
+    const v = Math.round((yMax / yTicks) * i);
+    const y = yOf(v);
+    if(i > 0){
+      el('line',{
+        x1:PAD.left, y1:y, x2:PAD.left+cW, y2:y,
+        stroke:'rgba(26,45,20,.7)', 'stroke-width':'1',
+        'stroke-dasharray':'3 4'
+      }, svg);
+    }
+    txt(v, {
+      x:PAD.left-5, y:y+3,
+      fill:'#3c6825', 'font-size':'8',
+      'font-family':'Orbitron,Courier New,monospace',
+      'text-anchor':'end'
+    }, svg);
+  }
+
+  // ── X axis ────────────────────────────────────────────────────
+  el('line',{
+    x1:PAD.left, y1:PAD.top+cH,
+    x2:PAD.left+cW, y2:PAD.top+cH,
+    stroke:'#263d18', 'stroke-width':'1'
+  }, svg);
+
+  // X axis ticks: every 2 rounds, plus round 1 and 20
+  const xTickRounds = [1,2,4,6,8,10,12,14,16,18,20];
+  xTickRounds.forEach(r=>{
+    const x = xOf(r);
+    el('line',{
+      x1:x, y1:PAD.top+cH, x2:x, y2:PAD.top+cH+3,
+      stroke:'#263d18','stroke-width':'1'
+    }, svg);
+    txt(r, {
+      x, y:PAD.top+cH+11,
+      fill:'#3c6825','font-size':'8',
+      'font-family':'Orbitron,Courier New,monospace',
+      'text-anchor':'middle'
+    }, svg);
+  });
+
+  // X axis label
+  txt('Round', {
+    x:PAD.left+cW/2, y:H-1,
+    fill:'#263d18','font-size':'8',
+    'font-family':'Orbitron,Courier New,monospace',
+    'text-anchor':'middle','letter-spacing':'1'
+  }, svg);
+
+  // ── Disruption vertical line ──────────────────────────────────
+  const disX = xOf(DIS + 0.5); // midpoint between rounds 10 and 11
+  el('line',{
+    x1:disX, y1:PAD.top, x2:disX, y2:PAD.top+cH,
+    stroke:'rgba(245,158,11,.55)', 'stroke-width':'1.5',
+    'stroke-dasharray':'4 3'
+  }, svg);
+  if(showDis){
+    txt('⚡', {
+      x:disX, y:PAD.top-2,
+      fill:'#f59e0b','font-size':'9','text-anchor':'middle'
+    }, svg);
+  }
+
+  if(!scores || scores.length === 0) return;
+
+  // ── Build line segments (pre and post disruption) ─────────────
+  const prePoints  = [];
+  const postPoints = [];
+
+  scores.forEach((s, i) => {
+    const round = i + 1; // 1-based
+    const x = xOf(round);
+    const y = yOf(s);
+    if(round <= DIS) prePoints.push([x,y]);
+    else             postPoints.push([x,y]);
+  });
+
+  // If there's a transition point (last pre + first post), bridge them
+  // with a dashed connector segment
+  if(prePoints.length === DIS && postPoints.length >= 1){
+    const lastPre  = prePoints[prePoints.length-1];
+    const firstPost= postPoints[0];
+    el('line',{
+      x1:lastPre[0], y1:lastPre[1],
+      x2:firstPost[0], y2:firstPost[1],
+      stroke:'rgba(150,140,200,.4)', 'stroke-width':'1.5',
+      'stroke-dasharray':'3 3'
+    }, svg);
+  }
+
+  function polyPath(pts){
+    return pts.map((p,i)=>(i===0?`M${p[0]},${p[1]}`:`L${p[0]},${p[1]}`)).join(' ');
+  }
+
+  if(prePoints.length >= 2){
+    el('path',{
+      d:polyPath(prePoints),
+      fill:'none', stroke:'rgba(93,234,138,.75)', 'stroke-width':'2',
+      'stroke-linejoin':'round','stroke-linecap':'round'
+    }, svg);
+  }
+  if(postPoints.length >= 2){
+    el('path',{
+      d:polyPath(postPoints),
+      fill:'none', stroke:'rgba(196,181,253,.65)', 'stroke-width':'2',
+      'stroke-linejoin':'round','stroke-linecap':'round'
+    }, svg);
+  }
+
+  // ── Dots ──────────────────────────────────────────────────────
+  scores.forEach((s, i) => {
+    const round = i + 1;
+    const x = xOf(round);
+    const y = yOf(s);
+    const isCur = i === curIdx;
+    const isPost = round > DIS;
+
+    if(isCur){
+      // Current round: larger glowing dot
+      el('circle',{
+        cx:x, cy:y, r:'5.5',
+        fill: isPost ? 'rgba(196,181,253,.95)' : 'rgba(93,234,138,.95)',
+        stroke:'#ffffff', 'stroke-width':'1.8',
+        filter:`drop-shadow(0 0 4px ${isPost?'rgba(196,181,253,.7)':'rgba(93,234,138,.7)'})`
+      }, svg);
+    } else {
+      el('circle',{
+        cx:x, cy:y, r:'3.5',
+        fill: isPost ? 'rgba(196,181,253,.8)' : 'rgba(93,234,138,.8)',
+        stroke: isPost ? 'rgba(167,139,250,.9)' : 'rgba(45,212,100,.9)',
+        'stroke-width':'1.2'
+      }, svg);
+    }
+
+    // Score tooltip on dot — small label for current round only
+    if(isCur){
+      const labelY = y > PAD.top + 14 ? y - 7 : y + 14;
+      txt(s, {
+        x, y:labelY,
+        fill: isPost ? '#c4b5fd' : '#5dea8a',
+        'font-size':'9',
+        'font-family':'Orbitron,Courier New,monospace',
+        'text-anchor':'middle','font-weight':'700'
+      }, svg);
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════
+   END ITERATION → AAR
+══════════════════════════════════════════════ */
+function endIteration(){
+  const pRate=SS.cycleInIter>0?SS.iterP/SS.cycleInIter:0;
+  const maxPts=CFG.CYCLES*CFG.COMMIT_MAX;
+
+  // Count depletion events this round
+  const depletionEvents=SS.iterDepletion.reduce((a,b)=>a+b,0);
+  const depletedZones=SS.iterDepletion.filter(d=>d>0).length;
+
+  // Build zone visit sequence string for iteration log
+  const visitSeq=SS.zonesVisitedThisRound.map(v=>v.zone).join(',');
+
+  if(SS.isPractice){
+    // Practice round: show practice break, don't log anything
+    document.getElementById('prac-score').textContent=SS.iterScore;
+    document.getElementById('prac-score-sub').textContent=
+      `${Math.round(SS.iterScore/maxPts*100)}% efficiency · Max: ${maxPts} pts`;
+    document.getElementById('prac-c').textContent=SS.iterC;
+    document.getElementById('prac-p').textContent=SS.iterP;
+    document.getElementById('prac-rate').textContent=Math.round(pRate*100)+'%';
+    document.getElementById('prac-cov').textContent=intelPct()+'%';
+    hideTutorialGuide();
+    showScreen('screen-practice-break');
+    return;
+  }
+
+  // Scored round: push to iterLog
+  SS.iterLog.push({
+    session_id:       SS.sessionId,
+    iteration:        SS.iter,
+    score:            SS.iterScore,
+    commits:          SS.iterC,
+    probes:           SS.iterP,
+    probe_rate:       +pRate.toFixed(3),
+    disrupted:        SS.disrupted,
+    intel_coverage:   intelPct(),
+    depletion_events: depletionEvents,
+    depleted_zones:   depletedZones,
+    zones_visited_seq:visitSeq,
+    zones_visited_n:  SS.zonesVisitedThisRound.length,
+  });
+
+  document.getElementById('aar-badge').textContent=`Round ${SS.iter} — After Action Report`;
+  document.getElementById('aar-round').textContent=`Round ${SS.iter}`;
+  document.getElementById('aar-sub').textContent=`Round ${SS.iter} of ${CFG.TOTAL_ITER} complete`;
+  document.getElementById('aar-score').textContent=SS.iterScore;
+  document.getElementById('aar-score-sub').textContent=
+    `${Math.round(SS.iterScore/maxPts*100)}% efficiency · Max: ${maxPts} pts`;
+  document.getElementById('aar-c').textContent=SS.iterC;
+  document.getElementById('aar-p').textContent=SS.iterP;
+  document.getElementById('aar-rate').textContent=Math.round(pRate*100)+'%';
+  document.getElementById('aar-cov').textContent=intelPct()+'%';
+  const scores=SS.iterLog.map(l=>l.score);
+  renderLineChart('chart-aar', scores, SS.iter-1, SS.disrupted);
+  const isLast = SS.iter >= CFG.TOTAL_ITER;
+  document.getElementById('aar-next-btn').textContent = isLast
+    ? '[ View Final Results ]'
+    : `[ Begin Round ${SS.iter + 1} ]`;
+  showScreen('screen-break');
+}
+
+/* ══════════════════════════════════════════════
+   NEXT ITERATION
+══════════════════════════════════════════════ */
+function nextIteration(){
+  if(SS.iter===CFG.DISRUPTION_AFTER&&!SS.disrupted){SS.disrupted=true;showScreen('screen-disruption');return;}
+  SS.iter++;
+  if(SS.iter>CFG.TOTAL_ITER){endSession();return;}
+  SS.cycleInIter=0;SS.iterScore=0;SS.iterC=0;SS.iterP=0;
+  SS.truckPos=null;
+  SS.iterStart=Date.now();
+  SS.iterDepletion=new Array(SS.sectors.length).fill(0);
+  SS.zonesVisitedThisRound=[];
+  _pipsLastIter=-1;  // force pip re-render for new round
+  showScreen('screen-game');renderGrid();updateHud();
+}
+
+/* ══════════════════════════════════════════════
+   END SESSION
+══════════════════════════════════════════════ */
+function endSession(){
+  SS.sessionComplete=true;
+  const tot=SS.trialLog.length;
+  const maxTot=CFG.TOTAL_ITER*CFG.CYCLES*CFG.COMMIT_MAX;
+  const pRate=tot>0?SS.totalP/tot:0;
+  const avgLat=tot>0?Math.round(SS.trialLog.reduce((a,t)=>a+t.latency_ms,0)/tot):0;
+  const avgModal=tot>0?Math.round(SS.trialLog.filter(t=>t.modal_duration_ms).reduce((a,t)=>a+(t.modal_duration_ms||0),0)/tot):0;
+  const avg=arr=>arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0;
+  const pre=SS.iterLog.filter(l=>l.iteration<=CFG.DISRUPTION_AFTER).map(l=>l.score);
+  const post=SS.iterLog.filter(l=>l.iteration>CFG.DISRUPTION_AFTER).map(l=>l.score);
+  const preAvg=avg(pre),postAvg=avg(post);
+  const catchN=SS.catchTrials.length;
+  const catchCorrectN=SS.catchTrials.filter(c=>c.catch_correct).length;
+  const prevExploitedCommits=SS.trialLog.filter(t=>t.action==='commit'&&t.zone_previously_exploited).length;
+  const totalCommits=SS.trialLog.filter(t=>t.action==='commit').length;
+
+  const sessionData={
+    session_id:SS.sessionId,
+    session_complete:true,
+    config:CFG,
+    terrain_demand_mapping:{
+      pre_disruption: {forest:'4-5',river:'3-4',mountain:'2-3',field:'1-2'},
+      post_disruption:{forest:'1-2',river:'2-3',mountain:'3-4',field:'4-5'},
+    },
+    summary:{
+      total_score:SS.totalScore,max_possible:maxTot,
+      score_pct:Math.round(SS.totalScore/maxTot*100),
+      total_trials:tot,total_commits:SS.totalC,total_probes:SS.totalP,
+      probe_rate:+pRate.toFixed(3),
+      avg_decision_latency_ms:avgLat,avg_modal_duration_ms:avgModal,
+      pre_disruption_avg:preAvg,post_disruption_avg:postAvg,
+      final_intel_coverage:intelPct(),
+      catch_trials_n:catchN,catch_trials_correct_n:catchCorrectN,
+      catch_accuracy:catchN>0?+(catchCorrectN/catchN).toFixed(3):null,
+      prev_exploited_commits:prevExploitedCommits,
+      prev_exploited_rate:totalCommits>0?+(prevExploitedCommits/totalCommits).toFixed(3):null,
+    },
+    catch_trials:SS.catchTrials,
+    iteration_log:SS.iterLog,
+    trial_log:SS.trialLog.map(t=>{const{_modal_close_time,...r}=t;return r;}),
+  };
+  document.getElementById('data-export').value=JSON.stringify(sessionData);
+  window._gridSessionData=sessionData;
+  document.getElementById('end-score').textContent=SS.totalScore;
+  document.getElementById('end-score-sub').textContent=`${Math.round(SS.totalScore/maxTot*100)}% of theoretical maximum`;
+  document.getElementById('end-c').textContent=SS.totalC;
+  document.getElementById('end-p').textContent=SS.totalP;
+  document.getElementById('end-rate').textContent=Math.round(pRate*100)+'%';
+  document.getElementById('end-pre').textContent=preAvg+' pts';
+  document.getElementById('end-post').textContent=postAvg+' pts';
+  document.getElementById('end-lat').textContent=avgLat+'ms';
+  renderLineChart('chart-end', SS.iterLog.map(l=>l.score), SS.iterLog.length-1, true);
+  const delta=postAvg-preAvg;
+  document.getElementById('end-debrief').innerHTML=
+    `Session complete. Total score: <strong>${SS.totalScore} pts</strong> across 20 rounds. `+
+    `Overall scout rate: <strong>${Math.round(pRate*100)}%</strong> `+
+    `(${SS.totalP} scouts, ${SS.totalC} convoy deployments). `+
+    `Final intel coverage: <strong>${intelPct()}%</strong> of the grid. `+
+    `Pre-disruption average: <strong>${preAvg} pts</strong>. `+
+    `Post-disruption average: <strong>${postAvg} pts</strong> `+
+    `(${delta>=0?'+':''}${delta} pts change).`;
+  showScreen('screen-end');
+}
+
+/* ══════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════ */
+function showToast(msg,tone){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast ${tone} show`;
+  clearTimeout(window._tt);
+  window._tt=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+/* ══════════════════════════════════════════════
+   IN-GAME GUIDED TUTORIAL
+   Runs as a bottom bar overlay during the practice
+   round. Seven steps, four require real actions.
+══════════════════════════════════════════════ */
+
+// Step definitions
+// type: 'button' = click Next to advance
+//       'probe'  = requires a scout action
+//       'commit' = requires a deploy action
+const TUT_STEPS = [
+  {
+    title: 'Welcome to Grid Actual',
+    body:  'You\'ll manage supply convoys across a classified 10×10 grid of forward operating zones. This training exercise will walk you through the mechanics. <strong>Your training score is not recorded.</strong>',
+    type:  'button',
+  },
+  {
+    title: 'Step 1 — Classified zones',
+    body:  'Every zone begins <strong>classified</strong> — demand is hidden behind a <strong>?</strong>. Click any zone on the grid to open the decision panel, then choose <strong>Send Scout</strong> to reveal it.',
+    type:  'probe',
+    badge: 'Scout any zone',
+    pulse: 'unknown',
+  },
+  {
+    title: 'Scout result',
+    body:  '', // filled dynamically after action
+    type:  'button',
+  },
+  {
+    title: 'Step 2 — Deploy a convoy',
+    body:  'Click the zone you just scouted to deploy a convoy immediately. Points scale with demand — <strong>+50 pts</strong> at demand 5, down to <strong>+5 pts</strong> at demand 1.',
+    type:  'commit',
+    badge: 'Deploy to scouted zone',
+    pulse: 'last-scouted',
+  },
+  {
+    title: 'Demand depletion',
+    body:  '', // filled dynamically after action
+    type:  'button',
+  },
+  {
+    title: 'Step 3 — Convoy movement',
+    body:  'Your convoy is now positioned. <strong>Blue-highlighted zones</strong> are the only valid deployment targets. Try deploying to one of them. Scouting remains unrestricted everywhere.',
+    type:  'commit',
+    badge: 'Deploy to a blue zone',
+    pulse: 'adjacent',
+  },
+  {
+    title: 'Step 4 — Scout anywhere',
+    body:  'Scouting has no movement restriction — you can gather intelligence on <strong>any unknown zone</strong> regardless of convoy position. Click any <strong>?</strong> zone on the grid and send a scout.',
+    type:  'probe',
+    badge: 'Scout any unknown zone',
+    pulse: 'unknown',
+  },
+  {
+    title: 'Training complete',
+    body:  'You\'re ready. The scored mission has <strong>20 rounds</strong> of 10 decisions each. Zone demand resets at the start of every round. Your goal is to maximize total score. Good luck.',
+    type:  'button',
+    finalBtn: true,
+  },
+];
+
+const TUT_STATE = {
+  active:         false,
+  step:           0,
+  lastScoutedIdx: null,
+  lastCommitIdx:  null,
+};
+
+function initTutorialGuide(){
+  TUT_STATE.active         = true;
+  TUT_STATE.step           = 0;
+  TUT_STATE.lastScoutedIdx = null;
+  TUT_STATE.lastCommitIdx  = null;
+  renderTutGuide();
+}
+
+function hideTutorialGuide(){
+  TUT_STATE.active = false;
+  const guide = document.getElementById('tut-guide');
+  if(guide) guide.classList.remove('active');
+  const grid = document.getElementById('sector-grid');
+  if(grid) grid.classList.remove('tut-locked');
+  clearTutPulse();
+}
+
+function renderTutGuide(){
+  const step = TUT_STEPS[TUT_STATE.step];
+  const n    = TUT_STEPS.length;
+  const el   = id => document.getElementById(id);
+
+  el('tut-guide').classList.add('active');
+  el('tg-step').textContent  = `Step ${TUT_STATE.step + 1} of ${n}`;
+  el('tg-title').textContent = step.title;
+  el('tg-body').innerHTML    = step.body;
+
+  const isButton = step.type === 'button';
+  el('tg-next').style.display  = isButton ? '' : 'none';
+  el('tg-badge').style.display = isButton ? 'none' : '';
+  el('tg-badge').textContent   = step.badge || '↑ Perform the action above';
+
+  // Lock grid during button (read) steps; unlock for action steps
+  const grid = document.getElementById('sector-grid');
+  if(grid){
+    if(isButton) grid.classList.add('tut-locked');
+    else         grid.classList.remove('tut-locked');
+  }
+
+  // Final step: change button label
+  if(step.finalBtn){
+    el('tg-next').textContent = '[ Continue Training ]';
+  } else {
+    el('tg-next').textContent = '[ Next ]';
+  }
+
+  // Pulse appropriate tiles
+  clearTutPulse();
+  if(step.pulse === 'unknown'){
+    document.querySelectorAll('.sector.unknown').forEach(t=>t.classList.add('tut-pulse'));
+  } else if(step.pulse === 'last-scouted' && TUT_STATE.lastScoutedIdx !== null){
+    const t = document.getElementById(`tile-${TUT_STATE.lastScoutedIdx}`);
+    if(t) t.classList.add('tut-pulse');
+  } else if(step.pulse === 'adjacent'){
+    document.querySelectorAll('.sector.adj-valid').forEach(t=>t.classList.add('tut-pulse'));
+  }
+}
+
+function clearTutPulse(){
+  document.querySelectorAll('.sector.tut-pulse').forEach(t=>t.classList.remove('tut-pulse'));
+}
+
+function tutGuideNext(){
+  if(!TUT_STATE.active) return;
+  const step = TUT_STEPS[TUT_STATE.step];
+  if(step.finalBtn){
+    // Dismiss guide, let player finish practice round freely
+    hideTutorialGuide();
+    return;
+  }
+  TUT_STATE.step++;
+  renderTutGuide();
+}
+
+// Called from resolveAction when tutorial is active
+function advanceTutorial(action, idx){
+  if(!TUT_STATE.active) return;
+  const step = TUT_STEPS[TUT_STATE.step];
+
+  if(action === 'probe' && step.type === 'probe'){
+    TUT_STATE.lastScoutedIdx = idx;
+    const sec = SS.sectors[idx];
+    const eff = effectiveDemand(sec);
+    // Fill in the dynamic debrief for step 2
+    TUT_STEPS[2].body =
+      `Your scout revealed <strong>${sec.name}</strong>: terrain <strong>${TERRAIN_NAMES[sec.terrain]}</strong>, ` +
+      `demand <strong>${eff}/5 — ${DEMAND_LABELS[eff]}</strong>. ` +
+      `The tile now shows its terrain icon and a color that reflects demand level — ` +
+      `<strong style="color:var(--red)">red</strong> zones are high priority. ` +
+      `Scout history appears as dots at the tile bottom and persists across all rounds.`;
+    TUT_STATE.step++;
+    renderTutGuide();
+  } else if(action === 'commit' && step.type === 'commit'){
+    TUT_STATE.lastCommitIdx = idx;
+    const sec  = SS.sectors[idx];
+    const dep  = SS.iterDepletion[idx] || 0;
+    const newEff = effectiveDemand(sec);
+    if(TUT_STATE.step === 3){
+      // Depletion debrief after first commit
+      TUT_STEPS[4].body =
+        `You deployed to <strong>${sec.name}</strong>. Each deployment reduces that zone\'s demand by <strong>2 levels</strong> for the rest of this round. ` +
+        `The zone\'s demand is now <strong>${newEff}/5</strong> — notice the tile color has shifted. ` +
+        `Deploying to the same zone repeatedly yields diminishing returns.`;
+    }
+    TUT_STATE.step++;
+    renderTutGuide();
+  }
+}
+
+/* ══════════════════════════════════════════════
+   PRACTICE ROUND
+   Uses a simple fixed demand grid (not the seeded
+   research grid) so practice doesn't interact with
+   the real demand structure.
+══════════════════════════════════════════════ */
+function makePracticeSectors(){
+  // Simple 10×10 practice grid: demand based on a readable pattern
+  // Terrain cycles in groups of 4, moderate demand levels
+  const pracRng=mkRng(9999);
+  const n=CFG.GRID_COLS*CFG.GRID_COLS; // 100
+  const terrainCycle=[0,1,2,3];
+  return Array.from({length:n},(_,i)=>{
+    const terrain=terrainCycle[i%4];
+    // Demand 3-5 for practice — gives meaningful depletion experience with -2 rule
+    const base=3+Math.floor(pracRng()*3);
+    const cueInt=Math.max(0,Math.min(4,base-1));
+    return{
+      id:i,name:zoneName(i),terrain,
+      baseDemand:base,postDemand:base,
+      cueInt,probeHistory:[],scouted:false,
+    };
+  });
+}
+
+function startPracticeRound(){
+  const sectors=makePracticeSectors();
+  Object.assign(SS,{
+    iter:1,cycleInIter:0,
+    iterScore:0,totalScore:0,
+    iterC:0,iterP:0,totalC:0,totalP:0,commitHits:0,
+    sectors,iterDepletion:new Array(sectors.length).fill(0),
+    zoneCommitHistory:new Array(sectors.length).fill(0),
+    truckPos:null,selectedIdx:null,iterLog:[],trialLog:[],
+    iterStart:Date.now(),sessionStart:null,
+    tileClickTime:null,modalOpenTime:null,
+    zonesVisitedThisRound:[],catchTrials:[],
+    isPractice:true,
+    sessionId:null,sessionComplete:false,
+    disrupted:false,
+  });
+  showScreen('screen-game');
+  // Update HUD header to show "Training" framing
+  document.getElementById('rt-curr').innerHTML='<span style="color:var(--amber)">TRAINING</span>';
+  renderGrid();updateHud();
+  // Start the guided tutorial overlay
+  initTutorialGuide();
+}
+
+function beginRealSession(){
+  hideTutorialGuide();
+  startSession();
+}
+
+/* ══════════════════════════════════════════════
+   START REAL SESSION
+══════════════════════════════════════════════ */
+function startSession(){
+  const sectors=initSectors();
+  // Generate session ID: timestamp + 4 random hex chars
+  const sessionId='GRID-'+Date.now()+'-'+Math.floor(Math.random()*0x10000).toString(16).padStart(4,'0').toUpperCase();
+  Object.assign(SS,{
+    iter:1,cycleInIter:0,
+    iterScore:0,totalScore:0,
+    iterC:0,iterP:0,totalC:0,totalP:0,commitHits:0,
+    sectors,iterDepletion:new Array(sectors.length).fill(0),
+    zoneCommitHistory:new Array(sectors.length).fill(0),
+    truckPos:null,selectedIdx:null,iterLog:[],trialLog:[],
+    iterStart:Date.now(),sessionStart:Date.now(),
+    tileClickTime:null,modalOpenTime:null,
+    zonesVisitedThisRound:[],catchTrials:[],
+    isPractice:false,
+    sessionId,sessionComplete:false,
+    disrupted:false,
+  });
+  showScreen('screen-game');renderGrid();updateHud();
+}
+
+/* ══════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  // Start acknowledgment countdown when disruption screen appears
+  if(id==='screen-disruption') startDisruptionCountdown();
+}
+
+function startDisruptionCountdown(){
+  const btn=document.getElementById('dis-btn');
+  const cdEl=document.getElementById('dis-countdown');
+  let secs=5;
+  btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed';
+  cdEl.textContent=`(${secs})`;
+  const iv=setInterval(()=>{
+    secs--;
+    if(secs<=0){
+      clearInterval(iv);
+      btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';
+      cdEl.textContent='';
+    } else {
+      cdEl.textContent=`(${secs})`;
+    }
+  },1000);
+}
+function downloadData(){
+  const b=new Blob([document.getElementById('data-export').value],{type:'application/json'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(b),download:`grid_actual_${Date.now()}.json`});
+  a.click();URL.revokeObjectURL(a.href);
+}
+document.getElementById('modal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modal'))closeModal();
+});
+</script>
+</body>
+</html>
