@@ -687,9 +687,188 @@ body{animation:screenOn .8s ease-out;}
 .end-debrief{width:100%;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--accent3);padding:12px 16px;font-family:var(--disp);font-size:18px;color:var(--text2);line-height:1.65;text-align:left;font-weight:400;}
 .end-debrief strong{color:var(--text);font-weight:600;}
 .end-actions{display:flex;gap:9px;}
+/* ════════════════════════════════════════
+   ROTATION PROMPT
+   Shown on phones in portrait mode.
+   Hidden in landscape and on desktop.
+════════════════════════════════════════ */
+#rotation-prompt{
+  display:none;
+  position:fixed;inset:0;
+  background:var(--bg);
+  z-index:9999;
+  flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:20px;text-align:center;
+  padding:30px;
+}
+.rot-icon{font-size:48px;animation:rotSpin 2s ease-in-out infinite;}
+@keyframes rotSpin{
+  0%,40%{transform:rotate(0deg)}
+  60%,100%{transform:rotate(90deg)}
+}
+.rot-title{font-family:var(--hud);font-size:18px;color:var(--accent);letter-spacing:.1em;}
+.rot-body{font-family:var(--disp);font-size:15px;color:var(--text2);line-height:1.6;max-width:280px;}
+
+/* Portrait phones: show rotation prompt, hide game */
+@media (max-width:768px) and (orientation:portrait){
+  #rotation-prompt{display:flex;}
+  body > .screen, #screen-game{display:none !important;}
+}
+
+/* ════════════════════════════════════════
+   LANDSCAPE MOBILE  (≤ 900px wide)
+   Tile shrinks to 48px, sidebar collapses
+   to a compact strip below the map,
+   HUD compresses to single row.
+════════════════════════════════════════ */
+@media (max-width:900px) and (orientation:landscape){
+
+  body{padding:6px 8px 80px;}
+
+  .screen{max-width:100%;}
+  #screen-game{gap:4px;}
+
+  /* Tile and grid */
+  :root{--tile:48px;--gap:3px;}
+  .sector-grid{
+    grid-template-columns:repeat(10,var(--tile));
+    grid-template-rows:repeat(10,var(--tile));
+  }
+
+  /* Coordinate labels */
+  .clbl.col{width:var(--tile);height:14px;font-size:7px;}
+  .clbl.row{width:14px;height:var(--tile);font-size:7px;}
+  .map-inner{padding-left:14px;padding-top:14px;}
+
+  /* Terrain SVG inside tile */
+  .terrain-svg{width:28px !important;height:28px !important;}
+  .eff-badge{font-size:7px;top:1px;right:2px;}
+  .sector-nm{font-size:6px;}
+  .unk-icon{font-size:14px;}
+  .unk-sub{display:none;}
+  .truck-icon{width:13px;height:13px;bottom:2px;right:2px;}
+  .s-hist{gap:1px;bottom:1px;}
+  .h-dot{width:4px;height:4px;}
+
+  /* Round tracker — compress */
+  .round-track{padding:5px 8px;}
+  .rt-label{font-size:8px;min-width:36px;}
+  .rt-bar{height:7px;}
+  .rt-score{font-size:6px;min-height:9px;}
+  .rt-curr{font-size:9px;}
+
+  /* HUD — single tight row */
+  .hud{padding:5px 8px;gap:6px;}
+  .hdiv{height:22px;}
+  .hlbl{font-size:8px;letter-spacing:.08em;}
+  .hval{font-size:16px;}
+  .pcol{display:none;} /* hide progress bar — space is tight */
+  .ptrk,.plbl{display:none;}
+
+  /* game-main: map + no sidebar */
+  .game-main{gap:6px;align-items:flex-start;}
+  .map-frame::after{font-size:6px;bottom:-16px;}
+
+  /* Sidebar — hidden on mobile, replaced by compact strip */
+  .sidebar{display:none;}
+
+  /* Compact mobile info strip below map */
+  #mobile-strip{
+    display:flex;
+    width:100%;gap:8px;
+    background:var(--bg2);border:1px solid var(--border2);
+    padding:6px 10px;align-items:center;flex-wrap:wrap;
+    margin-top:6px;
+  }
+  .ms-block{display:flex;flex-direction:column;gap:1px;flex:1;min-width:60px;}
+  .ms-lbl{font-size:8px;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;}
+  .ms-val{font-family:var(--hud);font-size:13px;color:var(--text);font-weight:500;}
+  .ms-convoy{flex:2;font-family:var(--disp);font-size:12px;color:var(--text2);line-height:1.3;}
+  .ms-convoy .free{color:var(--accent2);}
+  .ms-convoy .locked{color:var(--amber);}
+  .ms-convoy strong{color:var(--blue);font-family:var(--hud);font-size:12px;}
+
+  /* Points popup — compact */
+  .pts-popup{padding:7px 10px;gap:3px;}
+  .pp-action{font-size:9px;}
+  .pp-zone{font-size:11px;}
+  .pp-pts{font-size:26px;}
+  .pp-detail{font-size:10px;}
+
+  /* Score overlay banner */
+  .mso-pts{font-size:24px;}
+  .mso-label{font-size:9px;}
+  .mso-zone{font-size:11px;}
+  .map-score-overlay{height:40px;}
+
+  /* Modal — fits narrow landscape */
+  .modal{width:95vw;padding:12px 14px;gap:9px;}
+  .m-zone{padding:8px 10px;}
+  .m-name{font-size:14px;}
+  .m-sig{font-size:10px;}
+  .m-demand{font-size:13px;}
+  .m-hist{font-size:10px;}
+  .m-q{font-size:13px;}
+  .m-terrain{width:38px;height:38px;}
+  .ch-btn{padding:8px 10px;}
+  .ch-action{font-size:13px;}
+  .ch-desc{font-size:11px;}
+  .ch-pts{font-size:10px;}
+  .m-convoy-note{font-size:11px;padding:6px 10px;}
+  .m-dismiss{font-size:11px;}
+
+  /* Tutorial bar — slim */
+  .tut-guide{margin-top:6px;}
+  .tg-body-wrap{padding:10px 14px;gap:6px;}
+  .tg-title{font-size:14px;}
+  .tg-body{font-size:13px;}
+  .tg-objective{padding:7px 10px;}
+  .tg-obj-label{font-size:9px;}
+  .tg-obj-text{font-size:12px;}
+  #tg-next{padding:12px 18px;font-size:11px;}
+  .tg-free-text{gap:1px;}
+  .tg-free-label{font-size:9px;}
+  .tg-free-sub{font-size:12px;}
+  .tg-obj-text span{font-size:10px !important;}
+
+  /* Freeplay strip */
+  .tut-guide.freeplay{padding:8px 14px;}
+
+  /* Intro / non-game screens */
+  .callsign{font-size:32px;}
+  .brief-body{padding:10px 14px;}
+  .brief-p{font-size:14px;}
+  .brief-callout{font-size:13px;padding:8px 12px;}
+  .brief-meta{gap:12px;}
+  .brief-meta-val{font-size:12px;}
+
+  /* AAR screens */
+  .aar-round{font-size:26px;}
+  .aar-sc-val{font-size:38px;}
+  .aar-stats{grid-template-columns:repeat(2,1fr);}
+  .aar-stat-val{font-size:16px;}
+
+  /* Disruption screen */
+  .dis-title{font-size:18px;}
+  .dis-body{font-size:14px;}
+  .dis-item{font-size:13px;}
+
+  /* End screen */
+  .end-sc-val{font-size:40px;}
+  .end-stats{grid-template-columns:repeat(3,1fr);}
+  .end-stat-val{font-size:15px;}
+}
 </style>
 </head>
 <body>
+
+<!-- Rotation prompt — shown on portrait phones -->
+<div id="rotation-prompt">
+  <div class="rot-icon">📱</div>
+  <div class="rot-title">Rotate Your Device</div>
+  <div class="rot-body">This mission runs best in <strong>landscape mode</strong>. Please rotate your phone to continue.</div>
+</div>
 
 <!-- ══ INTRO ══════════════════════════════════════ -->
 <div id="screen-intro" class="screen active">
@@ -865,6 +1044,23 @@ body{animation:screenOn .8s ease-out;}
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Mobile info strip — visible only in landscape mobile, replaces sidebar -->
+  <div id="mobile-strip" style="display:none;">
+    <div class="ms-block">
+      <div class="ms-lbl">Round</div>
+      <div class="ms-val" id="ms-round">1 / 20</div>
+    </div>
+    <div class="ms-block">
+      <div class="ms-lbl">Score</div>
+      <div class="ms-val" id="ms-score">0</div>
+    </div>
+    <div class="ms-block">
+      <div class="ms-lbl">Intel</div>
+      <div class="ms-val" id="ms-intel">0%</div>
+    </div>
+    <div class="ms-convoy" id="ms-convoy"><span class="free">Convoy ready</span></div>
   </div>
 
 <!-- ══ IN-GAME TUTORIAL OVERLAY CARD ═══════════════ -->
@@ -1328,8 +1524,9 @@ function buildTileElement(i, adjSet, isFirstDeploy){
     tile.appendChild(ic); tile.appendChild(sb);
   } else {
     const wrap = document.createElement('div');
-    wrap.className = 'terrain-svg'; wrap.style.cssText = 'width:40px;height:40px';
-    wrap.innerHTML = cachedTerrainSvg(sec.terrain, sec.cueInt, 40, dep);
+    const svgSz = isMobileLandscape() ? 28 : 40;
+    wrap.className = 'terrain-svg'; wrap.style.cssText = `width:${svgSz}px;height:${svgSz}px`;
+    wrap.innerHTML = cachedTerrainSvg(sec.terrain, sec.cueInt, svgSz, dep);
     tile.appendChild(wrap);
     const nm = document.createElement('div'); nm.className='sector-nm'; nm.textContent=sec.name;
     tile.appendChild(nm);
@@ -1609,12 +1806,16 @@ function closeModal(){
 ══════════════════════════════════════════════ */
 function updateConvoyStrip(){
   const msg=document.getElementById('convoy-msg');
+  const msConvoy=document.getElementById('ms-convoy');
+  let html;
   if(SS.truckPos===null){
-    msg.innerHTML=`<span class="free">Convoy ready</span> — first delivery can go to any sector`;
+    html=`<span class="free">Convoy ready</span> — first delivery can go to any sector`;
   } else {
     const zn=SS.sectors[SS.truckPos].name;
-    msg.innerHTML=`At <strong>${zn}</strong> — <span class="locked">next delivery must be to an adjacent sector</span>`;
+    html=`At <strong>${zn}</strong> — <span class="locked">next delivery must be to an adjacent sector</span>`;
   }
+  if(msg) msg.innerHTML=html;
+  if(msConvoy) msConvoy.innerHTML=html;
 }
 
 /* ══════════════════════════════════════════════
@@ -1877,6 +2078,13 @@ function updateHud(){
   document.getElementById('hud-cov').textContent=intelPct()+'%';
   document.getElementById('prog').style.width=(SS.cycleInIter/CFG.CYCLES*100)+'%';
   document.getElementById('prog-lbl').textContent=`Decision ${SS.cycleInIter} of ${CFG.CYCLES}`;
+  // Mobile strip
+  const msRound=document.getElementById('ms-round');
+  const msScore=document.getElementById('ms-score');
+  const msIntel=document.getElementById('ms-intel');
+  if(msRound) msRound.textContent=`${SS.iter} / ${CFG.TOTAL_ITER}`;
+  if(msScore) msScore.textContent=SS.iterScore;
+  if(msIntel) msIntel.textContent=intelPct()+'%';
   renderPips();
 }
 
@@ -2714,11 +2922,21 @@ function startSession(){
 /* ══════════════════════════════════════════════
    UTILS
 ══════════════════════════════════════════════ */
+function isMobileLandscape(){
+  return window.innerWidth <= 900 && window.innerWidth > window.innerHeight;
+}
+
+function updateMobileStrip(){
+  const strip = document.getElementById('mobile-strip');
+  if(!strip) return;
+  strip.style.display = isMobileLandscape() ? 'flex' : 'none';
+}
+
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
-  // Start acknowledgment countdown when disruption screen appears
+  updateMobileStrip();
   if(id==='screen-disruption') startDisruptionCountdown();
 }
 
@@ -2746,6 +2964,17 @@ function downloadData(){
 }
 document.getElementById('modal').addEventListener('click',e=>{
   if(e.target===document.getElementById('modal'))closeModal();
+});
+
+// Update mobile strip on resize and orientation change
+window.addEventListener('resize', updateMobileStrip);
+window.addEventListener('orientationchange', ()=>{
+  setTimeout(()=>{
+    updateMobileStrip();
+    // Clear SVG cache so terrain icons rebuild at the new tile size
+    Object.keys(_svgCache).forEach(k=>delete _svgCache[k]);
+    if(SS.sectors && SS.sectors.length) renderGrid();
+  }, 150);
 });
 </script>
 <!-- Dim overlay — shown during interface orientation tutorial steps -->
