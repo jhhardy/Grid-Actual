@@ -96,14 +96,14 @@ body{animation:screenOn .8s ease-out;}
 .panel{background:var(--bg2);border:1px solid var(--border2);position:relative;overflow:hidden;}
 .panel::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(93,234,138,.03) 0%,transparent 40%);pointer-events:none;}
 
-.panel-hdr{background:var(--bg3);border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;}
+.panel-hdr{background:var(--bg3);border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;gap:9px;font-size:13px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;}
 
 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .dot-g{background:var(--accent2);box-shadow:0 0 6px var(--accent2);animation:blink 2.2s infinite;}
 .dot-a{background:var(--amber2);box-shadow:0 0 6px var(--amber2);animation:blink 1.4s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
-.btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:10px 26px;border:none;cursor:pointer;transition:all .15s ease;position:relative;overflow:hidden;}
+.btn{font-family:var(--mono);font-size:15px;letter-spacing:.14em;text-transform:uppercase;padding:10px 26px;border:none;cursor:pointer;transition:all .15s ease;position:relative;overflow:hidden;}
 .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,transparent 100%);pointer-events:none;}
 .btn-p{background:linear-gradient(180deg,rgba(93,234,138,.14),rgba(93,234,138,.08));color:var(--accent);border:1px solid var(--accent3);box-shadow:0 0 10px rgba(93,234,138,.12),inset 0 1px 0 rgba(93,234,138,.1);}
 .btn-p:hover{background:linear-gradient(180deg,rgba(93,234,138,.22),rgba(93,234,138,.14));box-shadow:0 0 18px rgba(93,234,138,.25);transform:translateY(-1px);}
@@ -112,7 +112,7 @@ body{animation:screenOn .8s ease-out;}
 .btn-a{background:linear-gradient(180deg,rgba(251,191,36,.12),rgba(251,191,36,.06));color:var(--amber);border:1px solid var(--amber3);box-shadow:0 0 10px rgba(251,191,36,.1);}
 .btn-a:hover{background:linear-gradient(180deg,rgba(251,191,36,.2),rgba(251,191,36,.12));box-shadow:0 0 18px rgba(251,191,36,.2);}
 
-.mil-badge{font-size:10px;letter-spacing:.2em;color:var(--accent);background:rgba(93,234,138,.06);border:1px solid rgba(93,234,138,.2);padding:4px 16px;text-transform:uppercase;}
+.mil-badge{font-size:13px;letter-spacing:.2em;color:var(--accent);background:rgba(93,234,138,.06);border:1px solid rgba(93,234,138,.2);padding:4px 16px;text-transform:uppercase;}
 
 /* ════════════════════════════════════════
    INTRO
@@ -121,71 +121,206 @@ body{animation:screenOn .8s ease-out;}
 .intro-hero{width:100%;text-align:center;padding:30px 20px 22px;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
 .intro-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:1px;height:30px;background:linear-gradient(180deg,transparent,var(--accent2));}
 .callsign{font-family:var(--hud);font-size:48px;font-weight:700;letter-spacing:.12em;color:var(--accent);text-shadow:0 0 20px rgba(93,234,138,.4),0 0 50px rgba(93,234,138,.15);line-height:1;}
-.intro-sub{font-size:10px;letter-spacing:.3em;color:var(--text3);text-transform:uppercase;}
-.intro-tag{font-family:var(--disp);font-size:14px;color:var(--text2);line-height:1.6;max-width:420px;font-weight:400;}
+.intro-sub{font-size:13px;letter-spacing:.3em;color:var(--text3);text-transform:uppercase;}
+.intro-tag{font-family:var(--disp);font-size:19px;color:var(--text2);line-height:1.6;max-width:420px;font-weight:400;}
 
 .briefing{width:100%;margin-bottom:14px;}
-.brief-body{padding:16px 20px;display:flex;flex-direction:column;gap:11px;}
-.brief-p{font-family:var(--disp);font-size:14px;color:var(--text2);line-height:1.65;font-weight:400;}
+.brief-body{padding:16px 20px;display:flex;flex-direction:column;gap:14px;}
+.brief-p{font-family:var(--disp);font-size:19px;color:var(--text2);line-height:1.65;font-weight:400;}
 .brief-p strong{color:var(--text);font-weight:600;}
-.ac-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px;}
-.ac{background:var(--bg3);border:1px solid var(--border);padding:11px 14px;display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden;}
+.brief-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border3),transparent);margin:2px 0;}
+.brief-callout{
+  background:rgba(239,68,68,.05);
+  border-left:3px solid rgba(239,68,68,.5);
+  padding:10px 14px;
+  font-family:var(--disp);font-size:18px;color:var(--text2);
+  line-height:1.6;font-weight:400;
+}
+.brief-callout strong{color:var(--red);font-weight:600;}
+.brief-meta{
+  display:flex;gap:20px;flex-wrap:wrap;
+  padding:10px 0 4px;
+  border-top:1px solid var(--border);
+}
+.brief-meta-item{display:flex;flex-direction:column;gap:2px;}
+.brief-meta-lbl{font-size:12px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;}
+.brief-meta-val{font-family:var(--hud);font-size:16px;color:var(--text);font-weight:500;}
+
 .ac::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
-.ac.dep::before{background:linear-gradient(90deg,var(--accent3),transparent);}
-.ac.sct::before{background:linear-gradient(90deg,var(--purple2),transparent);}
-.ac-lbl{font-size:9px;letter-spacing:.15em;text-transform:uppercase;}
-.ac.dep .ac-lbl{color:var(--accent);}
-.ac.sct .ac-lbl{color:var(--purple);}
-.ac-title{font-family:var(--disp);font-size:14px;font-weight:600;color:var(--text);}
-.ac-desc{font-family:var(--disp);font-size:12px;color:var(--text2);line-height:1.45;font-weight:400;}
-.ac-pts{font-size:10px;margin-top:2px;}
-.ac.dep .ac-pts{color:var(--amber);}
-.ac.sct .ac-pts{color:var(--purple);}
-.movement-callout{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.22);border-left:2px solid var(--blue);padding:11px 15px;font-family:var(--disp);font-size:13px;color:rgba(96,165,250,.9);line-height:1.6;font-weight:400;}
-.movement-callout strong{color:var(--blue);font-weight:600;}
+
+.ac.dep 
+.ac.sct 
+
+.ac.dep 
+.ac.sct 
+
 .intro-actions{display:flex;flex-direction:column;align-items:center;gap:9px;padding:16px 0 0;}
-.intro-hint{font-size:9px;letter-spacing:.12em;color:var(--text4);text-transform:uppercase;}
+.intro-hint{font-size:12px;letter-spacing:.12em;color:var(--text4);text-transform:uppercase;}
 
 /* ════════════════════════════════════════
-   TUTORIAL
-════════════════════════════════════════ */
-/* ════════════════════════════════════════
-   IN-GAME TUTORIAL GUIDE BAR
-   Fixed bottom bar that overlays the game
-   screen during the practice round.
+   IN-GAME TUTORIAL BAR
+   All mechanics steps: static, in-flow below
+   the map. No overlay, no scrim, ever.
+   Freeplay: compact fixed bottom strip.
 ════════════════════════════════════════ */
 .tut-guide{
-  position:fixed;
-  bottom:0;left:50%;
-  transform:translateX(-50%);
-  width:100%;max-width:1020px;
-  background:rgba(5,10,3,.96);
-  border-top:2px solid var(--accent3);
-  padding:12px 20px;
+  position:static;
+  width:100%;
+  background:rgba(5,10,3,.97);
+  border:1px solid var(--border3);
+  border-top:3px solid var(--accent2);
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
   display:none;
-  align-items:center;
-  gap:16px;
-  z-index:80;
-  box-shadow:0 -6px 24px rgba(0,0,0,.5);
+  flex-direction:column;
+  margin-top:10px;
 }
+/* No scrim ever */
+.tut-guide::before{display:none;}
 .tut-guide.active{display:flex;}
-.tg-text{flex:1;display:flex;flex-direction:column;gap:3px;}
-.tg-step{font-size:9px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;}
-.tg-title{font-family:var(--hud);font-size:14px;color:var(--accent);letter-spacing:.06em;}
-.tg-body{font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.45;font-weight:400;}
-.tg-body strong{color:var(--text);font-weight:600;}
-.tg-action-badge{
-  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--amber);background:rgba(245,158,11,.08);
-  border:1px solid rgba(245,158,11,.3);
-  padding:3px 10px;white-space:nowrap;flex-shrink:0;
+
+/* When an objective is shown, layout becomes a row:
+   text section on left, objective callout on right */
+.tut-guide.has-objective #tg-body-wrap{
+  flex-direction:row;
+  align-items:center;
+  gap:20px;
 }
+.tut-guide.has-objective .tg-text-section{
+  flex:1;
+}
+.tut-guide.has-objective #tg-objective{
+  flex-shrink:0;
+  min-width:200px;max-width:260px;
+  align-self:center;
+  margin:0;
+}
+/* Hide footer (Next button) when objective is shown — action is the only way */
+.tut-guide.has-objective #tg-footer{display:none !important;}
+/* Hide header/progress pips in bar mode */
+.tut-guide #tg-header{display:none;}
+
+/* ── FREE-PLAY MODE: compact fixed bottom strip ── */
+.tut-guide.freeplay{
+  position:static;
+  transform:none;
+  width:100%;
+  flex-direction:row;align-items:center;
+  margin-top:10px;
+  border-top:2px solid var(--accent3);
+  border-left:none;border-right:none;border-bottom:none;
+  box-shadow:none;
+  padding:12px 20px;gap:16px;
+}
+
+/* Card header */
+.tg-header{
+  background:var(--bg3);
+  border-bottom:1px solid var(--border2);
+  padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tg-step{
+  font-size:13px;letter-spacing:.18em;
+  color:var(--text3);text-transform:uppercase;
+}
+
+/* Card body */
+.tg-body-wrap{
+  padding:18px 20px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.tg-title{
+  font-family:var(--hud);font-size:19px;
+  color:var(--accent);letter-spacing:.06em;
+  line-height:1.2;
+}
+.tg-body{
+  font-family:var(--disp);font-size:18px;
+  color:var(--text2);line-height:1.6;font-weight:400;
+}
+.tg-body strong{color:var(--text);font-weight:600;}
+
+/* Objective box — shown on action steps */
+.tg-objective{
+  background:rgba(245,158,11,.08);
+  border:1px solid rgba(245,158,11,.3);
+  border-left:3px solid var(--amber2);
+  padding:10px 14px;
+  display:flex;align-items:center;gap:10px;
+}
+.tg-obj-label{
+  font-size:14px;letter-spacing:.16em;
+  color:var(--amber2);text-transform:uppercase;
+  white-space:nowrap;flex-shrink:0;
+}
+.tg-obj-text{
+  font-family:var(--hud);font-size:17px;
+  color:var(--amber);font-weight:500;
+}
+
+/* Card footer */
+.tg-footer{
+  padding:0;
+  border-top:2px solid var(--accent3);
+  display:flex;
+}
+#tg-next{
+  flex:1;
+  padding:16px 24px;
+  font-size:16px;
+  letter-spacing:.18em;
+  border-radius:0;
+  border:none;
+  border-top:none;
+  box-shadow:none;
+}
+#tg-next:hover{
+  transform:none;
+  background:linear-gradient(180deg,rgba(93,234,138,.28),rgba(93,234,138,.18));
+  box-shadow:none;
+}
+
+/* Free-play mode inner elements */
+.tg-free-text{
+  flex:1;
+  display:flex;flex-direction:column;gap:2px;
+}
+.tg-free-label{
+  font-size:13px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;
+}
+
+.tg-free-sub{
+  font-family:var(--disp);font-size:17px;color:var(--text2);font-weight:400;
+}
+
 /* Pulse highlight on tiles awaiting tutorial interaction */
 @keyframes tutPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(93,234,138,.0);}
-  50%{box-shadow:0 0 0 3px rgba(93,234,138,.45);}
+  50%{box-shadow:0 0 0 4px rgba(93,234,138,.55);}
 }
-.sector.tut-pulse{animation:tutPulse 1.4s ease-in-out infinite;}
+.sector.tut-pulse{animation:tutPulse 1.2s ease-in-out infinite;z-index:2;}
+
+/* Interface orientation highlight — glowing outline on UI regions */
+.tut-highlight{
+  outline:2px solid rgba(93,234,138,.9);
+  outline-offset:4px;
+  box-shadow:0 0 0 6px rgba(93,234,138,.1),0 0 28px rgba(93,234,138,.25);
+  position:relative;z-index:52;  /* above dim overlay */
+  transition:outline .2s,box-shadow .2s;
+}
+
+/* Dim overlay — shown during interface orientation steps */
+#tut-dim-overlay{
+  position:fixed;inset:0;
+  background:rgba(3,7,2,.72);
+  z-index:50;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease;
+}
+#tut-dim-overlay.active{opacity:1;}
+
+/* Tutorial guide bar must sit above the dim overlay */
+.tut-guide.active{display:flex;position:relative;z-index:53;}
 
 /* ════════════════════════════════════════
    GAME SCREEN
@@ -194,7 +329,7 @@ body{animation:screenOn .8s ease-out;}
 
 .round-track{width:100%;background:var(--bg2);border:1px solid var(--border2);padding:9px 14px;display:flex;align-items:flex-start;gap:10px;position:relative;overflow:hidden;}
 .round-track::before{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.15),transparent);}
-.rt-label{font-family:var(--hud);font-size:9px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;white-space:nowrap;padding-top:4px;min-width:46px;}
+.rt-label{font-family:var(--hud);font-size:13px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;white-space:nowrap;padding-top:4px;min-width:46px;}
 .rt-pips{display:flex;gap:3px;flex:1;align-items:flex-start;flex-wrap:nowrap;}
 .rt-pip{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;}
 .rt-bar{width:100%;height:9px;background:var(--bg4);border:1px solid var(--border);transition:background .3s,box-shadow .3s;flex-shrink:0;}
@@ -207,7 +342,7 @@ body{animation:screenOn .8s ease-out;}
 .rt-dis{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;}
 .rt-dis-bar{width:3px;height:9px;background:var(--amber2);box-shadow:0 0 5px rgba(251,191,36,.4);}
 .rt-dis-lbl{font-size:7px;color:var(--amber2);white-space:nowrap;line-height:1;}
-.rt-curr{font-family:var(--hud);font-size:11px;color:var(--text2);white-space:nowrap;padding-top:3px;}
+.rt-curr{font-family:var(--hud);font-size:14px;color:var(--text2);white-space:nowrap;padding-top:3px;}
 .rt-curr strong{color:var(--accent);}
 
 .hud{width:100%;display:grid;grid-template-columns:auto 1px auto 1px 1fr 1px auto 1px auto;gap:12px;align-items:center;padding:10px 16px;background:var(--bg2);border:1px solid var(--border2);position:relative;overflow:hidden;}
@@ -215,22 +350,20 @@ body{animation:screenOn .8s ease-out;}
 .hdiv{width:1px;height:30px;background:var(--border2);}
 .hblk{display:flex;flex-direction:column;gap:3px;}
 .hblk.r{text-align:right;}
-.hlbl{font-size:9px;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;}
+.hlbl{font-size:13px;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;}
 .hval{font-family:var(--hud);font-size:22px;font-weight:700;color:var(--accent);line-height:1.1;text-shadow:0 0 8px rgba(93,234,138,.3);}
-.hval.flash{animation:hf .4s ease;}
-@keyframes hf{0%,100%{color:var(--accent)}40%{color:#fff;text-shadow:0 0 16px var(--accent)}}
+
+40%{color:#fff;text-shadow:0 0 16px var(--accent)}}
 .hval.dim{color:var(--text);text-shadow:none;}
 .pcol{display:flex;flex-direction:column;gap:5px;}
 .ptrk{height:5px;background:var(--bg4);border:1px solid var(--border);border-radius:2px;overflow:hidden;}
 .pfill{height:100%;background:linear-gradient(90deg,var(--accent3),var(--accent2));transition:width .4s ease;box-shadow:0 0 6px rgba(93,234,138,.5);}
-.plbl{font-size:9px;letter-spacing:.1em;color:var(--text3);text-align:center;text-transform:uppercase;}
+.plbl{font-size:15px;letter-spacing:.08em;color:var(--text3);text-align:center;text-transform:uppercase;}
 
-.convoy-strip{width:100%;padding:7px 14px;background:var(--bg2);border:1px solid var(--border2);display:flex;align-items:center;gap:11px;font-size:11px;}
-.convoy-icon-wrap{width:28px;height:28px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.3);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.convoy-msg{color:var(--text2);line-height:1.4;flex:1;letter-spacing:.04em;}
+.convoy-msg{color:var(--text2);line-height:1.4;flex:1;letter-spacing:.04em;font-size:16px;}
 .convoy-msg .free{color:var(--accent2);}
 .convoy-msg .locked{color:var(--amber);}
-.convoy-msg strong{color:var(--blue);font-family:var(--hud);font-size:12px;}
+.convoy-msg strong{color:var(--blue);font-family:var(--hud);font-size:15px;}
 
 .game-main{width:100%;display:flex;gap:12px;align-items:flex-start;}
 
@@ -239,7 +372,7 @@ body{animation:screenOn .8s ease-out;}
 ════════════════════════════════════════ */
 .map-frame{flex-shrink:0;position:relative;padding:3px;background:var(--bg2);border:1px solid var(--border3);}
 .map-frame::before{content:'';position:absolute;inset:-1px;border:1px solid rgba(93,234,138,.06);pointer-events:none;}
-.map-frame::after{content:'TACTICAL MAP — GRID ACTUAL';position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-family:var(--hud);font-size:8px;letter-spacing:.18em;color:var(--text4);white-space:nowrap;}
+.map-frame::after{content:'OPERATIONAL GRID — JTF LOGISTICS';position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-family:var(--hud);font-size:8px;letter-spacing:.18em;color:var(--text4);white-space:nowrap;}
 
 /* Large score overlay — floats over entire map on each action */
 .map-score-overlay{
@@ -267,7 +400,7 @@ body{animation:screenOn .8s ease-out;}
 }
 .mso-label{
   font-family:var(--hud);
-  font-size:11px;
+  font-size:14px;
   letter-spacing:.14em;
   text-transform:uppercase;
   opacity:.8;
@@ -275,7 +408,7 @@ body{animation:screenOn .8s ease-out;}
 }
 .mso-zone{
   font-family:var(--disp);
-  font-size:13px;
+  font-size:16px;
   color:rgba(255,255,255,.55);
   letter-spacing:.05em;
   font-weight:500;
@@ -325,6 +458,7 @@ body{animation:screenOn .8s ease-out;}
   border-color:rgba(248,68,68,.95);
   box-shadow:inset 0 0 16px rgba(239,68,68,.15),0 0 10px rgba(239,68,68,.25);
   animation:criticalPulse 2.4s ease-in-out infinite;
+  will-change:box-shadow;
 }
 @keyframes criticalPulse{
   0%,100%{box-shadow:inset 0 0 16px rgba(239,68,68,.15),0 0 10px rgba(239,68,68,.25);}
@@ -360,8 +494,7 @@ body{animation:screenOn .8s ease-out;}
 
 .sector.resolving{animation:rfl .55s ease;}
 @keyframes rfl{0%{filter:brightness(1)}30%{filter:brightness(1.8)}100%{filter:brightness(1)}}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
-.sector.shake{animation:shake .25s ease;}
+25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 
 /* depleted */
 .sector.depleted .terrain-svg{opacity:.5;}
@@ -386,7 +519,7 @@ body{animation:screenOn .8s ease-out;}
 .h-dot.stale{opacity:.25;}
 
 /* truck icon */
-.truck-icon{position:absolute;bottom:4px;right:4px;width:18px;height:18px;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.5);border-radius:2px;display:flex;align-items:center;justify-content:center;animation:truckPulse 2s ease-in-out infinite;}
+.truck-icon{position:absolute;bottom:4px;right:4px;width:18px;height:18px;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.5);border-radius:2px;display:flex;align-items:center;justify-content:center;animation:truckPulse 2s ease-in-out infinite;will-change:box-shadow;}
 @keyframes truckPulse{0%,100%{box-shadow:0 0 4px rgba(96,165,250,.3)}50%{box-shadow:0 0 10px rgba(96,165,250,.6)}}
 
 /* demand overlay */
@@ -401,12 +534,8 @@ body{animation:screenOn .8s ease-out;}
 .sidebar{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px;}
 .s-card{background:var(--bg2);border:1px solid var(--border2);display:flex;flex-direction:column;position:relative;overflow:hidden;}
 .s-card::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(93,234,138,.025) 0%,transparent 50%);pointer-events:none;}
-.s-hdr{background:var(--bg3);border-bottom:1px solid var(--border);padding:6px 12px;font-size:9px;letter-spacing:.17em;color:var(--text3);text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.s-hdr{background:var(--bg3);border-bottom:1px solid var(--border);padding:6px 12px;font-size:13px;letter-spacing:.17em;color:var(--text3);text-transform:uppercase;display:flex;align-items:center;gap:6px;}
 .s-body{padding:10px 12px;display:flex;flex-direction:column;gap:7px;}
-.s-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 0;border-bottom:1px solid var(--border);}
-.s-row:last-child{border-bottom:none;}
-.s-row-l{color:var(--text2);letter-spacing:.04em;}
-.s-row-v{font-family:var(--hud);font-size:13px;color:var(--text);font-weight:500;}
 
 .pts-popup{
   background:var(--bg2);
@@ -425,27 +554,22 @@ body{animation:screenOn .8s ease-out;}
 .pts-popup.tone-probe::before{background:linear-gradient(90deg,rgba(196,181,253,.06),transparent);}
 .pts-popup.tone-low{border-left-color:var(--amber2);}
 .pts-popup.tone-low::before{background:linear-gradient(90deg,rgba(251,191,36,.06),transparent);}
-.pp-action{font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+.pp-action{font-size:14px;letter-spacing:.16em;text-transform:uppercase;}
 .pts-popup.tone-commit .pp-action{color:var(--accent);}
 .pts-popup.tone-probe .pp-action{color:var(--purple);}
 .pts-popup.tone-low .pp-action{color:var(--amber);}
-.pp-zone{font-family:var(--disp);font-size:13px;color:var(--text2);font-weight:400;}
+.pp-zone{font-family:var(--disp);font-size:17px;color:var(--text2);font-weight:400;}
 .pp-pts{font-family:var(--hud);font-size:38px;font-weight:700;line-height:1.05;}
 .pts-popup.tone-commit .pp-pts{color:var(--accent);text-shadow:0 0 14px rgba(93,234,138,.4);}
 .pts-popup.tone-probe .pp-pts{color:var(--purple);text-shadow:0 0 14px rgba(196,181,253,.4);}
 .pts-popup.tone-low .pp-pts{color:var(--amber);text-shadow:0 0 14px rgba(251,191,36,.4);}
-.pp-detail{font-size:11px;color:var(--text3);letter-spacing:.05em;}
+.pp-detail{font-size:16px;color:var(--text3);letter-spacing:.05em;}
 
 .dcl{display:flex;flex-direction:column;gap:4px;}
-.dcl-row{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--text2);}
+.dcl-row{display:flex;align-items:center;gap:7px;font-size:15px;color:var(--text2);}
 .dcl-sw{width:14px;height:14px;border-radius:2px;flex-shrink:0;border:1px solid rgba(255,255,255,.06);}
-.dep-legend{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--text2);}
+.dep-legend{display:flex;align-items:center;gap:7px;font-size:15px;color:var(--text2);}
 .dep-sw{width:22px;height:3px;background:linear-gradient(90deg,var(--amber3),transparent);border-radius:1px;}
-
-/* terrain legend */
-.terrain-legend{display:flex;flex-direction:column;gap:5px;}
-.tl-row{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text2);}
-.tl-icon{width:22px;height:22px;flex-shrink:0;}
 
 /* ════════════════════════════════════════
    MODAL
@@ -464,11 +588,11 @@ body{animation:screenOn .8s ease-out;}
 .m-zone::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.12),transparent);}
 .m-terrain{width:46px;height:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .m-info{flex:1;}
-.m-name{font-family:var(--hud);font-size:16px;font-weight:700;color:var(--accent);letter-spacing:.1em;}
-.m-sig{font-size:10px;color:var(--text2);margin-top:2px;letter-spacing:.07em;}
-.m-demand{font-family:var(--disp);font-size:13px;margin-top:3px;font-weight:600;}
-.m-hist{font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:.05em;}
-.m-q{font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.5;font-weight:400;}
+.m-name{font-family:var(--hud);font-size:19px;font-weight:700;color:var(--accent);letter-spacing:.1em;}
+.m-sig{font-size:15px;color:var(--text2);margin-top:2px;letter-spacing:.07em;}
+.m-demand{font-family:var(--disp);font-size:18px;margin-top:3px;font-weight:600;}
+.m-hist{font-size:15px;color:var(--text3);margin-top:2px;letter-spacing:.05em;}
+.m-q{font-family:var(--disp);font-size:18px;color:var(--text2);line-height:1.5;font-weight:400;}
 .m-q strong{color:var(--text);font-weight:600;}
 .m-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .ch-btn{background:var(--bg3);border:1px solid var(--border);padding:12px 13px;cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:border-color .13s,background .13s,transform .1s,box-shadow .13s;text-align:left;position:relative;overflow:hidden;}
@@ -478,28 +602,27 @@ body{animation:screenOn .8s ease-out;}
 .ch-btn:hover{transform:translateY(-2px);}
 .ch-btn.dep:hover{border-color:var(--accent3);background:rgba(93,234,138,.04);box-shadow:0 0 10px rgba(93,234,138,.1);}
 .ch-btn.sct:hover{border-color:var(--purple2);background:rgba(196,181,253,.04);box-shadow:0 0 10px rgba(196,181,253,.1);}
-.ch-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;}
+.ch-lbl{font-size:13px;letter-spacing:.14em;text-transform:uppercase;}
 .ch-btn.dep .ch-lbl{color:var(--accent);}
 .ch-btn.sct .ch-lbl{color:var(--purple);}
-.ch-action{font-family:var(--disp);font-size:13px;font-weight:600;color:var(--text);}
-.ch-desc{font-family:var(--disp);font-size:11px;color:var(--text2);line-height:1.4;font-weight:400;}
-.ch-pts{font-size:10px;margin-top:2px;}
+.ch-action{font-family:var(--disp);font-size:18px;font-weight:600;color:var(--text);}
+.ch-desc{font-family:var(--disp);font-size:16px;color:var(--text2);line-height:1.4;font-weight:400;}
+.ch-pts{font-size:15px;margin-top:2px;}
 .ch-btn.dep .ch-pts{color:var(--amber);}
 .ch-btn.sct .ch-pts{color:var(--purple);}
 .ch-btn.sct-only{grid-column:1/-1;}
-.m-convoy-note{background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.2);padding:8px 12px;font-size:10px;color:rgba(96,165,250,.8);letter-spacing:.05em;line-height:1.5;font-family:var(--disp);font-weight:400;}
-.m-dismiss{font-size:10px;color:var(--text3);text-align:center;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;}
+.m-convoy-note{background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.2);padding:8px 12px;font-size:15px;color:rgba(96,165,250,.8);letter-spacing:.05em;line-height:1.5;font-family:var(--disp);font-weight:400;}
+.m-dismiss{font-size:13px;color:var(--text3);text-align:center;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px;}
 .m-dismiss:hover{color:var(--text2);}
 
 /* ════════════════════════════════════════
    TOAST
 ════════════════════════════════════════ */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--bg3);border:1px solid var(--border3);padding:7px 18px;font-size:10px;letter-spacing:.08em;opacity:0;transition:opacity .18s,transform .18s;pointer-events:none;z-index:200;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--bg3);border:1px solid var(--border3);padding:7px 18px;font-size:13px;letter-spacing:.08em;opacity:0;transition:opacity .18s,transform .18s;pointer-events:none;z-index:200;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.good{border-color:var(--accent2);color:var(--accent);box-shadow:0 0 8px rgba(93,234,138,.2);}
 .toast.ok{border-color:var(--amber2);color:var(--amber);box-shadow:0 0 8px rgba(251,191,36,.2);}
 .toast.info{border-color:var(--purple2);color:var(--purple);box-shadow:0 0 8px rgba(196,181,253,.2);}
-.toast.warn{border-color:var(--amber3);color:var(--amber);}
 
 /* ════════════════════════════════════════
    BREAK / AAR
@@ -507,37 +630,24 @@ body{animation:screenOn .8s ease-out;}
 #screen-break{gap:16px;max-width:600px;text-align:center;}
 .aar-hdr{display:flex;flex-direction:column;align-items:center;gap:8px;}
 .aar-round{font-family:var(--hud);font-size:34px;font-weight:700;color:var(--accent);letter-spacing:.12em;text-shadow:0 0 18px rgba(93,234,138,.3);}
-.aar-title{font-size:10px;letter-spacing:.24em;color:var(--text2);text-transform:uppercase;}
+.aar-title{font-size:13px;letter-spacing:.24em;color:var(--text2);text-transform:uppercase;}
 .aar-sc{width:100%;background:var(--bg2);border:1px solid var(--border3);padding:20px 28px;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;overflow:hidden;}
 .aar-sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.25),transparent);}
 .aar-sc-c::before,.aar-sc-c::after{content:'';position:absolute;width:12px;height:12px;border-color:var(--border4);border-style:solid;}
 .aar-sc-c::before{top:-1px;left:-1px;border-width:2px 0 0 2px;}
 .aar-sc-c::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
-.aar-sc-lbl{font-size:9px;letter-spacing:.2em;color:var(--text3);text-transform:uppercase;}
+.aar-sc-lbl{font-size:14px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;}
 .aar-sc-val{font-family:var(--hud);font-size:50px;font-weight:700;color:var(--accent);line-height:1;text-shadow:0 0 20px rgba(93,234,138,.35);}
-.aar-sc-sub{font-size:10px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;}
+.aar-sc-sub{font-size:13px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;}
 .aar-stats{width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
 .aar-stat{background:var(--bg2);border:1px solid var(--border);padding:9px 10px;display:flex;flex-direction:column;gap:2px;position:relative;overflow:hidden;}
 .aar-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(93,234,138,.08),transparent);}
-.aar-stat-lbl{font-size:8px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;}
+.aar-stat-lbl{font-size:13px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;}
 .aar-stat-val{font-family:var(--hud);font-size:18px;font-weight:500;color:var(--text);}
 .chart-wrap{width:100%;background:var(--bg2);border:1px solid var(--border);padding:12px 14px 10px;display:flex;flex-direction:column;gap:6px;}
-.chart-title{font-size:9px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;}
+.chart-title{font-size:12px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;}
 .chart-svg-wrap{width:100%;position:relative;}
 .chart-svg{width:100%;overflow:visible;display:block;}
-/* SVG elements styled via JS — CSS for consistency */
-.chart-axis-line{stroke:var(--border2);stroke-width:1;}
-.chart-grid-line{stroke:var(--border);stroke-width:1;stroke-dasharray:3 4;}
-.chart-dis-line{stroke:var(--amber2);stroke-width:1.5;stroke-dasharray:4 3;opacity:.7;}
-.chart-line-pre{fill:none;stroke:rgba(93,234,138,.7);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
-.chart-line-post{fill:none;stroke:rgba(196,181,253,.6);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
-.chart-dot{r:4;stroke-width:1.5;}
-.chart-dot-pre{fill:rgba(93,234,138,.9);stroke:var(--accent2);}
-.chart-dot-post{fill:rgba(196,181,253,.85);stroke:var(--purple2);}
-.chart-dot-cur{r:5.5;fill:var(--accent);stroke:#fff;stroke-width:2;filter:drop-shadow(0 0 4px rgba(93,234,138,.6));}
-.chart-tick-lbl{fill:var(--text3);font-size:8px;font-family:var(--hud);text-anchor:middle;}
-.chart-ytick-lbl{fill:var(--text3);font-size:8px;font-family:var(--hud);text-anchor:end;}
-.chart-dis-lbl{fill:var(--amber2);font-size:8px;font-family:var(--hud);text-anchor:middle;}
 
 /* ════════════════════════════════════════
    DISRUPTION / END
@@ -546,14 +656,14 @@ body{animation:screenOn .8s ease-out;}
 .dis-icon{width:64px;height:64px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;font-size:28px;animation:disAnim 2.5s ease-in-out infinite;}
 @keyframes disAnim{0%,100%{border-color:rgba(245,158,11,.3);box-shadow:none}50%{border-color:rgba(245,158,11,.8);box-shadow:0 0 22px rgba(245,158,11,.3)}}
 .dis-title{font-family:var(--hud);font-size:24px;font-weight:700;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;text-shadow:0 0 14px rgba(245,158,11,.3);}
-.dis-body{font-family:var(--disp);font-size:15px;color:var(--text2);line-height:1.7;max-width:460px;font-weight:400;}
+.dis-body{font-family:var(--disp);font-size:19px;color:var(--text2);line-height:1.7;max-width:460px;font-weight:400;}
 .dis-body strong{color:var(--text);font-weight:600;}
 .dis-detail{width:100%;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.18);padding:14px 17px;display:flex;flex-direction:column;gap:8px;text-align:left;}
-.dis-dtitle{font-size:9px;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;}
-.dis-item{display:flex;gap:8px;align-items:flex-start;font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.5;font-weight:400;}
+.dis-dtitle{font-size:14px;letter-spacing:.16em;color:var(--amber);text-transform:uppercase;}
+.dis-item{display:flex;gap:8px;align-items:flex-start;font-family:var(--disp);font-size:18px;color:var(--text2);line-height:1.5;font-weight:400;}
 .dis-item strong{color:var(--text);font-weight:600;}
-.dis-chev{color:var(--amber2);font-size:12px;flex-shrink:0;margin-top:1px;}
-.dis-note{width:100%;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--amber3);padding:10px 14px;font-family:var(--disp);font-size:12px;color:var(--text2);line-height:1.6;text-align:left;font-weight:400;}
+.dis-chev{color:var(--amber2);font-size:15px;flex-shrink:0;margin-top:1px;}
+.dis-note{width:100%;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--amber3);padding:10px 14px;font-family:var(--disp);font-size:17px;color:var(--text2);line-height:1.6;text-align:left;font-weight:400;}
 .dis-note strong{color:var(--text);font-weight:600;}
 
 #screen-end{gap:16px;max-width:680px;text-align:center;}
@@ -563,19 +673,18 @@ body{animation:screenOn .8s ease-out;}
 .end-sc-c::before,.end-sc-c::after{content:'';position:absolute;width:13px;height:13px;border-color:var(--border4);border-style:solid;}
 .end-sc-c::before{top:-1px;left:-1px;border-width:2px 0 0 2px;}
 .end-sc-c::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
-.end-sc-lbl{font-size:9px;letter-spacing:.2em;color:var(--text3);text-transform:uppercase;}
+.end-sc-lbl{font-size:14px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;}
 .end-sc-val{font-family:var(--hud);font-size:54px;font-weight:700;color:var(--accent);line-height:1;text-shadow:0 0 24px rgba(93,234,138,.35);}
-.end-sc-sub{font-size:10px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;}
+.end-sc-sub{font-size:13px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;}
 .end-curve{width:100%;background:var(--bg2);border:1px solid var(--border);padding:11px 14px;display:flex;flex-direction:column;gap:8px;}
-.end-curve-title{font-size:9px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;}
-.end-curve-lbls{display:flex;justify-content:space-between;font-size:8px;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;}
-.end-curve-lbls .am{color:var(--amber2);}
+.end-curve-title{font-size:14px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;}
+
 .end-stats{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
 .end-stat{background:var(--bg2);border:1px solid var(--border);padding:9px 11px;display:flex;flex-direction:column;gap:3px;position:relative;overflow:hidden;}
 .end-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(93,234,138,.06),transparent);}
-.end-stat-lbl{font-size:8px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;}
+.end-stat-lbl{font-size:13px;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;}
 .end-stat-val{font-family:var(--hud);font-size:19px;font-weight:500;color:var(--text);}
-.end-debrief{width:100%;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--accent3);padding:12px 16px;font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.65;text-align:left;font-weight:400;}
+.end-debrief{width:100%;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--accent3);padding:12px 16px;font-family:var(--disp);font-size:18px;color:var(--text2);line-height:1.65;text-align:left;font-weight:400;}
 .end-debrief strong{color:var(--text);font-weight:600;}
 .end-actions{display:flex;gap:9px;}
 </style>
@@ -587,20 +696,44 @@ body{animation:screenOn .8s ease-out;}
   <div class="intro-hero">
     <div class="mil-badge">Tactical Resource Allocation System</div>
     <div class="callsign">GRID ACTUAL</div>
-    <div class="intro-sub">Forward Logistics Command Interface</div>
-    <div class="intro-tag">Manage convoy assets across a contested operational grid. Maximize total score across 20 rounds.</div>
+    <div class="intro-sub">Joint Civil Support Task Force — Logistics Command</div>
+    <div class="intro-tag">Direct relief operations across a disaster-affected region. Get the right resources to the right sectors before it's too late.</div>
   </div>
   <div class="briefing panel framed">
     <div class="panel-hdr"><div class="dot dot-a"></div>Operational Briefing</div>
     <div class="brief-body">
-      <p class="brief-p">You are managing resource allocation across a <strong>10×10 grid of forward operating zones</strong>. Each zone has a demand level that determines how valuable a convoy deployment will be. You will complete <strong>20 rounds</strong>, each comprising <strong>10 decisions</strong>.</p>
-      <p class="brief-p">On each decision, select a zone. Clicking a <strong>scouted, eligible zone deploys a convoy immediately</strong>. Clicking an unknown zone or a blocked zone opens a decision panel where you choose between the two actions:</p>
-      <div class="ac-grid">
-        <div class="ac dep"><div class="ac-lbl">▸ Deploy convoy</div><div class="ac-title">Commit resources</div><div class="ac-desc">Send a supply convoy. Points awarded based on the zone's current demand level at time of deployment.</div><div class="ac-pts">+5 to +50 pts · scaled to demand</div></div>
-        <div class="ac sct"><div class="ac-lbl">▸ Send scout</div><div class="ac-title">Gather intelligence</div><div class="ac-desc">Dispatch a reconnaissance unit. Reveals the zone's demand level. Intelligence is retained in future rounds.</div><div class="ac-pts">+8 pts · demand confirmed</div></div>
+
+      <p class="brief-p">At 0340 local time, a <strong>magnitude 7.2 earthquake</strong> hit the region. Mountain communities took the worst of it — roads are gone, bridges are down, and power and communications are out across hundreds of square kilometers. Landslides have cut off entire valleys. Casualty counts are still coming in.</p>
+
+      <div class="brief-callout">
+        <strong>The situation is critical.</strong> Communities across the region are running out of food, water, and medical supplies. Local emergency services are overwhelmed. A federal disaster declaration is in effect.
       </div>
-      <div class="movement-callout"><strong>Convoy movement:</strong> The first deployment each round may target any zone. After that, your convoy may only move to zones <strong>adjacent</strong> (including diagonal) to its current position. Scouting is always unrestricted.</div>
-      <p class="brief-p">Zone demand levels are <strong>hidden until a scout is sent</strong>. Scouting history persists across all rounds.</p>
+
+      <p class="brief-p">You are the <strong>Logistics Coordinator for the Joint Civil Support Task Force</strong> — a combined National Guard and Army relief operation. You control supply convoys and recon teams across a <strong>100-sector grid</strong> covering the full disaster zone.</p>
+
+      <p class="brief-p">Need levels vary across the grid. Mountain sectors took the hardest hit and need help first. Forested areas are harder to reach because of debris. Plains communities have more capacity to hold on. River valleys are the easiest to access right now — but conditions can change.</p>
+
+      <div class="brief-divider"></div>
+
+      <div class="brief-meta">
+        <div class="brief-meta-item">
+          <div class="brief-meta-lbl">Mission duration</div>
+          <div class="brief-meta-val">20 operational rounds</div>
+        </div>
+        <div class="brief-meta-item">
+          <div class="brief-meta-lbl">Decisions per round</div>
+          <div class="brief-meta-val">10</div>
+        </div>
+        <div class="brief-meta-item">
+          <div class="brief-meta-lbl">Command authority</div>
+          <div class="brief-meta-val">Logistics Coordinator, JTF</div>
+        </div>
+        <div class="brief-meta-item">
+          <div class="brief-meta-lbl">Rules of engagement</div>
+          <div class="brief-meta-val">Humanitarian relief — active</div>
+        </div>
+      </div>
+
     </div>
   </div>
   <div class="intro-actions">
@@ -609,35 +742,35 @@ body{animation:screenOn .8s ease-out;}
   </div>
 </div>
 
-<!-- ══ IN-GAME TUTORIAL GUIDE BAR ═════════════════ -->
-<!-- Overlays the game screen during practice round -->
-<div class="tut-guide" id="tut-guide">
-  <div class="tg-text">
-    <div class="tg-step"  id="tg-step">Step 1 of 7</div>
-    <div class="tg-title" id="tg-title">—</div>
-    <div class="tg-body"  id="tg-body">—</div>
-  </div>
-  <div class="tg-action-badge" id="tg-badge" style="display:none">↑ Action required</div>
-  <button class="btn btn-p" id="tg-next" onclick="tutGuideNext()" style="display:none;white-space:nowrap;flex-shrink:0;">[ Next ]</button>
-</div>
+
 
 <!-- ══ PRACTICE COMPLETE ════════════════════════════ -->
 <div id="screen-practice-done" class="screen">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:18px;max-width:560px;text-align:center;padding:8px 0;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:18px;max-width:600px;text-align:center;padding:8px 0;">
     <div class="mil-badge">Training Exercise — Complete</div>
-    <div style="font-family:var(--hud);font-size:30px;font-weight:700;color:var(--accent);letter-spacing:.1em;text-shadow:0 0 16px rgba(93,234,138,.3);">TRAINING COMPLETE</div>
-    <div style="background:var(--bg2);border:1px solid var(--border3);padding:18px 24px;width:100%;position:relative;overflow:hidden;">
+    <div style="font-family:var(--hud);font-size:30px;font-weight:700;color:var(--accent);letter-spacing:.1em;text-shadow:0 0 16px rgba(93,234,138,.3);">READY FOR DEPLOYMENT</div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border3);padding:20px 26px;width:100%;position:relative;overflow:hidden;text-align:left;">
       <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(93,234,138,.25),transparent)"></div>
-      <div style="font-family:var(--disp);font-size:15px;color:var(--text2);line-height:1.7;font-weight:400;">
-        The training exercise is now complete. <strong style="color:var(--text)">Your practice score was not recorded.</strong>
+      <div style="font-family:var(--hud);font-size:13px;letter-spacing:.2em;color:var(--text3);text-transform:uppercase;margin-bottom:12px;">Mission Objective</div>
+      <div style="font-family:var(--disp);font-size:19px;color:var(--text2);line-height:1.75;font-weight:400;">
+        The relief operation runs for <strong style="color:var(--text)">20 rounds</strong>. Each round you get <strong style="color:var(--text)">10 decisions</strong>.
         <br><br>
-        The scored mission consists of <strong style="color:var(--text)">20 rounds</strong> of 10 decisions each.
-        All mechanics work exactly as in the training exercise.
+        Your goal is simple: <strong style="color:var(--text)">do the most good with what you have</strong>. Get supplies to the sectors that need them most. Every convoy you send to a low-priority sector is one that didn't reach a critical one.
         <br><br>
-        When you are ready, begin the mission.
+        You can't reach every sector. And you won't always know which ones need help most until you send a recon team first. How you balance gathering information against taking action is the core of this mission.
+        <br><br>
+        <strong style="color:var(--accent)">Points reflect impact.</strong> A sector with critical need scores the most because it represents the people who needed help the most. Your goal: maximize your total score across all 20 rounds.
       </div>
     </div>
-    <button class="btn btn-p" onclick="beginRealSession()">[ Begin Mission ]</button>
+
+    <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);border-left:3px solid rgba(239,68,68,.5);padding:12px 18px;width:100%;text-align:left;">
+      <div style="font-family:var(--disp);font-size:18px;color:var(--text2);line-height:1.6;font-weight:400;">
+        <strong style="color:var(--text)">Note:</strong> Your training score was not recorded. From this point on, every decision counts.
+      </div>
+    </div>
+
+    <button class="btn btn-p" onclick="beginRealSession()" style="width:100%;padding:16px;font-size:16px;letter-spacing:.18em;">[ Begin Mission ]</button>
   </div>
 </div>
 
@@ -692,15 +825,15 @@ body{animation:screenOn .8s ease-out;}
           Convoy Status
         </div>
         <div class="s-body" style="padding:8px 12px;">
-          <div class="convoy-msg" id="convoy-msg"><span class="free">Undeployed</span> — first deployment may target any zone</div>
+          <div class="convoy-msg" id="convoy-msg"><span class="free">Convoy ready</span> — first delivery can go to any sector</div>
         </div>
       </div>
 
 
       <div class="s-card">
-        <div class="s-hdr"><div class="dot dot-g"></div>Zone Guide</div>
+        <div class="s-hdr"><div class="dot dot-g"></div>Sector Guide</div>
         <div class="s-body">
-          <div style="font-family:var(--disp);font-size:12px;color:var(--text2);line-height:1.5;font-weight:400">Zone colors indicate demand level after scouting. Terrain type provides a signal about demand.</div>
+          <div style="font-family:var(--disp);font-size:15px;color:var(--text2);line-height:1.5;font-weight:400">Color shows need level once a sector is assessed. Terrain type hints at what you'll find.</div>
           <!-- Demand color legend -->
           <div class="dcl">
             <div class="dcl-row"><div class="dcl-sw" style="background:rgba(46,3,3,.88);border-color:rgba(248,68,68,.7)"></div><span style="color:var(--red)">Critical (5)</span></div>
@@ -715,24 +848,56 @@ body{animation:screenOn .8s ease-out;}
               <div style="width:16px;height:16px;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.4);border-radius:2px;display:flex;align-items:center;justify-content:center;">
                 <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="1" y="5" width="10" height="6" rx="1" fill="rgba(96,165,250,.8)"/><rect x="11" y="6" width="4" height="4" rx=".5" fill="rgba(96,165,250,.6)"/><circle cx="4" cy="11.5" r="1.5" fill="rgba(96,165,250,.9)"/><circle cx="10" cy="11.5" r="1.5" fill="rgba(96,165,250,.9)"/></svg>
               </div>
-              <span style="font-size:10px;color:var(--blue)">Convoy position</span>
+              <span style="font-size:13px;color:var(--blue)">Convoy position</span>
             </div>
-            <div style="display:flex;gap:5px;align-items:center;font-size:10px;color:var(--text2);">
+            <div style="display:flex;gap:5px;align-items:center;font-size:13px;color:var(--text2);">
               <div style="width:12px;height:12px;border:1px solid rgba(96,165,250,.6);border-radius:1px;background:rgba(96,165,250,.08);flex-shrink:0"></div>
               <span>Valid next deployment zone</span>
             </div>
           </div>
           <div class="dep-legend" style="border-top:1px solid var(--border);padding-top:6px;"><div class="dep-sw"></div><span>Demand reduced this round</span></div>
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            <div style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text2)"><div style="width:6px;height:6px;border-radius:50%;background:var(--red)"></div>High</div>
-            <div style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text2)"><div style="width:6px;height:6px;border-radius:50%;background:var(--amber2)"></div>Mid</div>
-            <div style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text2)"><div style="width:6px;height:6px;border-radius:50%;background:var(--text3)"></div>Low</div>
-            <div style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text2);opacity:.38"><div style="width:6px;height:6px;border-radius:50%;background:var(--text3)"></div>Stale</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:13px;color:var(--text2)"><div style="width:6px;height:6px;border-radius:50%;background:var(--red)"></div>High</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:13px;color:var(--text2)"><div style="width:6px;height:6px;border-radius:50%;background:var(--amber2)"></div>Mid</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:13px;color:var(--text2)"><div style="width:6px;height:6px;border-radius:50%;background:var(--text3)"></div>Low</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:13px;color:var(--text2);opacity:.38"><div style="width:6px;height:6px;border-radius:50%;background:var(--text3)"></div>Stale</div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+<!-- ══ IN-GAME TUTORIAL OVERLAY CARD ═══════════════ -->
+<div class="tut-guide" id="tut-guide">
+  <!-- Modal card mode (mechanics steps) -->
+  <div class="tg-header" id="tg-header">
+    <div class="tg-step" id="tg-step">Training Exercise</div>
+  </div>
+  <div class="tg-body-wrap" id="tg-body-wrap">
+    <div class="tg-text-section">
+      <div class="tg-title" id="tg-title">—</div>
+      <div class="tg-body"  id="tg-body">—</div>
+    </div>
+    <div class="tg-objective" id="tg-objective" style="display:none">
+      <div class="tg-obj-label">Objective</div>
+      <div class="tg-obj-text" id="tg-obj-text">—</div>
+    </div>
+  </div>
+  <div class="tg-footer" id="tg-footer">
+    <button class="btn btn-p" id="tg-next" onclick="tutGuideNext()">[ Next ]</button>
+  </div>
+  <!-- Free-play strip mode (after mechanics learned) — replaces above when active -->
+  <div id="tg-free" style="display:none;flex:1;align-items:center;gap:16px;padding:12px 20px;">
+    <div class="tg-free-text" style="flex:1;">
+      <div class="tg-free-label">Training — Free Play</div>
+      <div class="tg-free-sub" id="tg-free-sub">You've learned the mechanics. Use your remaining decisions however you like.</div>
+    </div>
+    <div class="tg-objective" style="flex-shrink:0;min-width:220px;margin:0;">
+      <div class="tg-obj-label">Objective</div>
+      <div class="tg-obj-text">Complete the round <span id="tg-free-remaining" style="opacity:.7;font-size:13px;"></span></div>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- ══ MODAL ══════════════════════════════════════ -->
@@ -744,26 +909,26 @@ body{animation:screenOn .8s ease-out;}
         <div class="m-name"   id="m-name">—</div>
         <div class="m-sig"    id="m-sig">—</div>
         <div class="m-demand" id="m-demand"></div>
-        <div class="m-hist"   id="m-hist">No scout data</div>
+        <div class="m-hist"   id="m-hist">No recon data</div>
       </div>
     </div>
-    <div class="m-q">Select action for <strong id="m-zone-q">this zone</strong>:</div>
+    <div class="m-q">Select action for <strong id="m-zone-q">this sector</strong>:</div>
     <div class="m-choices">
-      <button class="ch-btn dep" id="ch-deploy" onclick="resolveAction('commit')">
-        <div class="ch-lbl">▸ Deploy convoy</div>
-        <div class="ch-action">Commit resources</div>
-        <div class="ch-desc">Points awarded based on the zone's current demand level at time of deployment.</div>
-        <div class="ch-pts" id="m-commit-pts">+5 to +50 pts</div>
-      </button>
       <button class="ch-btn sct" onclick="resolveAction('probe')">
-        <div class="ch-lbl">▸ Send scout</div>
-        <div class="ch-action">Gather intelligence</div>
-        <div class="ch-desc">Reveals true demand level. Saved to record, visible in future rounds.</div>
-        <div class="ch-pts">+8 pts · demand confirmed</div>
+        <div class="ch-lbl">▸ Send recon team</div>
+        <div class="ch-action">Assess conditions</div>
+        <div class="ch-desc">Dispatch a reconnaissance unit. Reveals true need level. Saved to record, visible in all future rounds.</div>
+        <div class="ch-pts">+8 pts · need level confirmed</div>
+      </button>
+      <button class="ch-btn dep" id="ch-deploy" onclick="resolveAction('commit')">
+        <div class="ch-lbl">▸ Deploy supplies</div>
+        <div class="ch-action">Deliver resources</div>
+        <div class="ch-desc">Send a supply convoy. Points awarded based on the sector's current need level at time of delivery.</div>
+        <div class="ch-pts" id="m-commit-pts">+5 to +50 pts</div>
       </button>
     </div>
     <div class="m-convoy-note" id="m-convoy-note" style="display:none"></div>
-    <div class="m-dismiss" onclick="closeModal()">[ Stand down — select different zone ]</div>
+    <div class="m-dismiss" onclick="closeModal()">[ Stand down — select different sector ]</div>
   </div>
 </div>
 
@@ -789,8 +954,8 @@ body{animation:screenOn .8s ease-out;}
     <div class="aar-stat"><div class="aar-stat-lbl">Scout rate</div><div class="aar-stat-val" id="prac-rate">—</div></div>
     <div class="aar-stat"><div class="aar-stat-lbl">Intel coverage</div><div class="aar-stat-val" id="prac-cov">—</div></div>
   </div>
-  <div style="background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--amber3);padding:11px 15px;font-family:var(--disp);font-size:13px;color:var(--text2);line-height:1.6;font-weight:400;width:100%;text-align:left">
-    This was a practice round. Your score and decisions were <strong style="color:var(--text)">not recorded</strong>. The scored mission will now begin.
+  <div style="background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--amber3);padding:11px 15px;font-family:var(--disp);font-size:18px;color:var(--text2);line-height:1.6;font-weight:400;width:100%;text-align:left">
+    Training complete. Your practice score was <strong style="color:var(--text)">not recorded</strong>. The real operation starts now.
   </div>
   <button class="btn btn-a" onclick="showScreen('screen-practice-done')">[ Continue to Mission Briefing ]</button>
 </div>
@@ -825,15 +990,15 @@ body{animation:screenOn .8s ease-out;}
 <!-- ══ DISRUPTION ══════════════════════════════════ -->
 <div id="screen-disruption" class="screen">
   <div class="dis-icon">⚡</div>
-  <div class="dis-title">Sitrep: Operational Change</div>
-  <div class="dis-body">Forward command reports a <strong>change in operational conditions</strong>. Zone demand levels have been reassigned across the grid.</div>
+  <div class="dis-title">Sitrep: Dam Failure — Flooding Underway</div>
+  <div class="dis-body">An upstream dam — already weakened by the earthquake — has failed. Floodwater is rushing into river valleys and low-lying plains. <strong>The pattern of need across the grid has changed significantly.</strong></div>
   <div class="dis-detail">
-    <div class="dis-dtitle">Intelligence Assessment</div>
-    <div class="dis-item"><span class="dis-chev">▸</span><span>Demand levels have <strong>shifted for some zones</strong>. The magnitude of change varies by zone.</span></div>
-    <div class="dis-item"><span class="dis-chev">▸</span><span>Pre-disruption scout data will appear <strong>faded on the tactical map</strong> to indicate potentially outdated intelligence.</span></div>
-    <div class="dis-item"><span class="dis-chev">▸</span><span>Zone signal indicators remain unchanged. Their relationship to the <strong>new demand levels</strong> may differ from before.</span></div>
+    <div class="dis-dtitle">Field Assessment</div>
+    <div class="dis-item"><span class="dis-chev">▸</span><span>River valleys and plains are now flooding fast. <strong>Need levels in those areas have jumped sharply.</strong></span></div>
+    <div class="dis-item"><span class="dis-chev">▸</span><span>Sectors you already assessed <strong>remain visible</strong> — but the small history dots on each tile will appear faded to remind you that the original reading may no longer be accurate.</span></div>
+    <div class="dis-item"><span class="dis-chev">▸</span><span>Mountain and forest sectors have mostly received aid and been evacuated. <strong>Need levels there have fallen.</strong></span></div>
   </div>
-  <div class="dis-note"><strong>Conditions are now stable.</strong> The remaining rounds will use the updated demand pattern.</div>
+  <div class="dis-note"><strong>Conditions are now stable.</strong> The remaining rounds reflect the new need pattern. Adjust your approach.</div>
   <button class="btn btn-a" id="dis-btn" onclick="nextIteration()" disabled style="opacity:.4;cursor:not-allowed">
     [ Acknowledged — Continue <span id="dis-countdown">(5)</span> ]
   </button>
@@ -858,8 +1023,8 @@ body{animation:screenOn .8s ease-out;}
     <div class="end-stat"><div class="end-stat-lbl">Total convoys</div><div class="end-stat-val" id="end-c">—</div></div>
     <div class="end-stat"><div class="end-stat-lbl">Total scouts</div><div class="end-stat-val" id="end-p">—</div></div>
     <div class="end-stat"><div class="end-stat-lbl">Overall scout rate</div><div class="end-stat-val" id="end-rate">—</div></div>
-    <div class="end-stat"><div class="end-stat-lbl">Pre-disruption avg</div><div class="end-stat-val" id="end-pre">—</div></div>
-    <div class="end-stat"><div class="end-stat-lbl">Post-disruption avg</div><div class="end-stat-val" id="end-post">—</div></div>
+    <div class="end-stat"><div class="end-stat-lbl">Phase 1 avg</div><div class="end-stat-val" id="end-pre">—</div></div>
+    <div class="end-stat"><div class="end-stat-lbl">Phase 2 avg</div><div class="end-stat-val" id="end-post">—</div></div>
     <div class="end-stat"><div class="end-stat-lbl">Avg decision time</div><div class="end-stat-val" id="end-lat">—</div></div>
   </div>
   <div class="end-debrief" id="end-debrief"></div>
@@ -1007,8 +1172,8 @@ const CFG = {
    1=River   → pre:3-4, post:2-3
    2=Mountain→ pre:2-3, post:3-4
    3=Field   → pre:1-2, post:4-5  */
-const TERRAIN_DEMAND_PRE  = [[4,5],[3,4],[2,3],[1,2]];
-const TERRAIN_DEMAND_POST = [[1,2],[2,3],[3,4],[4,5]];
+const TERRAIN_DEMAND_PRE  = [[3,4],[1,2],[4,5],[2,3]];
+const TERRAIN_DEMAND_POST = [[2,3],[4,5],[1,2],[3,4]];
 
 const COL_LABELS  = ['A','B','C','D','E','F','G','H','I','J'];
 const ROW_LABELS  = ['1','2','3','4','5','6','7','8','9','10'];
@@ -1086,26 +1251,36 @@ function initSectors(){
 function baseDemandNow(sec){return SS.disrupted?sec.postDemand:sec.baseDemand;}
 function effectiveDemand(sec){return Math.max(1,baseDemandNow(sec)-(SS.iterDepletion[sec.id]||0)*2);}
 function isDepleted(sec){return(SS.iterDepletion[sec.id]||0)>0;}
-function scoutedCount(){return SS.sectors.filter(s=>s.scouted).length;}
-function intelPct(){return Math.round(scoutedCount()/SS.sectors.length*100);}
+/* ══ PRECOMPUTED ADJACENCY MAP ══════════════════════
+   Built once at session init — O(1) lookup per call.
+   Each entry is a frozen Set of adjacent indices.    */
+let _adjMap = [];
+function precomputeAdjacency(){
+  const G=CFG.GRID_COLS, N=G*G;
+  _adjMap=new Array(N);
+  for(let i=0;i<N;i++){
+    const r=Math.floor(i/G),c=i%G,s=new Set();
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      if(dr===0&&dc===0) continue;
+      const nr=r+dr,nc=c+dc;
+      if(nr>=0&&nr<G&&nc>=0&&nc<G) s.add(nr*G+nc);
+    }
+    _adjMap[i]=Object.freeze(s);
+  }
+}
+function adjacentTo(idx){ return _adjMap[idx]||new Set(); }
+function isValidDeploy(idx){ return SS.truckPos===null||_adjMap[SS.truckPos]?.has(idx); }
 
+/* ══ INCREMENTAL SCOUT COUNTER ═════════════════════
+   Avoids filtering 100 sectors on every HUD update. */
+let _scoutedCount=0;
+function intelPct(){ return SS.sectors.length?Math.round(_scoutedCount/SS.sectors.length*100):0; }
 /* ══════════════════════════════════════════════
    ADJACENCY
 ══════════════════════════════════════════════ */
-function adjacentTo(idx){
-  const G=CFG.GRID_COLS,r=Math.floor(idx/G),c=idx%G,res=new Set();
-  for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
-    if(dr===0&&dc===0) continue;
-    const nr=r+dr,nc=c+dc;
-    if(nr>=0&&nr<G&&nc>=0&&nc<G) res.add(nr*G+nc);
-  }
-  return res;
-}
-function isValidDeploy(idx){return SS.truckPos===null||adjacentTo(SS.truckPos).has(idx);}
 
-/* ══════════════════════════════════════════════
-   RENDER GRID
-══════════════════════════════════════════════ */
+
+
 /* ══════════════════════════════════════════════
    TERRAIN SVG CACHE
    terrainSvg() is expensive (string template).
@@ -1145,7 +1320,7 @@ function buildTileElement(i, adjSet, isFirstDeploy){
 
   const tile = document.createElement('div');
   tile.className = cls; tile.id = `tile-${i}`;
-  tile.onclick = () => handleTileClick(i);
+  tile.dataset.idx = i;  // used by event delegation listener
 
   if(!sec.scouted){
     const ic = document.createElement('div'); ic.className='unk-icon'; ic.textContent='?';
@@ -1193,6 +1368,7 @@ function buildTileElement(i, adjSet, isFirstDeploy){
    RENDER GRID  (full rebuild — used at round
    starts and session init only)
 ══════════════════════════════════════════════ */
+let _gridListenerAttached=false;
 function renderGrid(){
   // Coordinate labels — only rebuild if column count changed (essentially never)
   const colRow = document.getElementById('col-lbls');
@@ -1209,7 +1385,15 @@ function renderGrid(){
   const adjSet       = SS.truckPos !== null ? adjacentTo(SS.truckPos) : null;
   const isFirstDeploy= SS.truckPos === null;
   const grid         = document.getElementById('sector-grid');
-  grid.innerHTML     = '';
+  grid.innerHTML='';
+  // Attach delegated listener once — handles all tile clicks via bubbling
+  if(!_gridListenerAttached){
+    grid.addEventListener('click',e=>{
+      const tile=e.target.closest('.sector');
+      if(tile&&tile.dataset.idx!==undefined) handleTileClick(+tile.dataset.idx);
+    });
+    _gridListenerAttached=true;
+  }
 
   SS.sectors.forEach((_, i) => {
     grid.appendChild(buildTileElement(i, adjSet, isFirstDeploy));
@@ -1309,24 +1493,15 @@ function handleTileClick(idx){
   const eligible=isValidDeploy(idx);
 
   // ── Tutorial restrictions ──────────────────────────────
-  if(TUT_STATE.active){
+  if(TUT_STATE.active && !TUT_STATE.freeplay){
     const step=TUT_STEPS[TUT_STATE.step];
-
-    // Button steps: grid is fully locked, no interactions
-    if(step.type==='button') return;
-
+    if(!step || step.type==='button' || step.freeplay) return;
     if(step.type==='probe'){
-      // Only allow clicking unknown zones (scouting)
-      // Scouted zones are off-limits during scout steps
       if(sec.scouted) return;
     }
-
     if(step.type==='commit'){
-      // Step 3 (index 3): only the last-scouted zone is valid
       if(TUT_STATE.step===3 && idx!==TUT_STATE.lastScoutedIdx) return;
-      // Step 5 (index 5): only adjacent zones are valid
       if(TUT_STATE.step===5 && !eligible) return;
-      // Blocked zones always blocked for commit
       if(!eligible) return;
     }
   }
@@ -1360,36 +1535,36 @@ function openModal(idx){
   document.querySelectorAll('.sector').forEach(t=>t.classList.remove('selected'));
   document.getElementById(`tile-${idx}`)?.classList.add('selected');
 
-  document.getElementById('m-name').textContent=`Zone ${sec.name}`;
-  document.getElementById('m-zone-q').textContent=`Zone ${sec.name}`;
+  document.getElementById('m-name').textContent=`Sector ${sec.name}`;
+  document.getElementById('m-zone-q').textContent=`Sector ${sec.name}`;
 
   // Modal terrain / icon
   const mTerrain=document.getElementById('m-terrain');
   if(sec.scouted){
     mTerrain.innerHTML=cachedTerrainSvg(sec.terrain,sec.cueInt,46,false);
-    const intWords=['very weak','weak','moderate','strong','very strong'];
+    const intWords=['very low','low','moderate','elevated','critical'];
     document.getElementById('m-sig').textContent=
-      `Terrain: ${TERRAIN_NAMES[sec.terrain]}, signal ${intWords[sec.cueInt]}`;
+      `${TERRAIN_NAMES[sec.terrain]} terrain · estimated need: ${intWords[sec.cueInt]}`;
     const eff=effectiveDemand(sec);
     const dep=SS.iterDepletion[idx]||0;
     const mDem=document.getElementById('m-demand');
-    mDem.textContent=`Current demand: ${eff}/5 — ${DEMAND_LABELS[eff]}`+(dep>0?` (−${dep*2} from ${dep} deploy${dep>1?'s':''})`:'');
+    mDem.textContent=`Current need: ${eff}/5 — ${DEMAND_LABELS[eff]}`+(dep>0?` (reduced by ${dep*2} this round)`:``);
     mDem.style.color=dep>0?'var(--amber)':DEMAND_COLORS[eff];
     const ePts=Math.round(CFG.COMMIT_MIN+((eff-1)/4)*(CFG.COMMIT_MAX-CFG.COMMIT_MIN));
-    document.getElementById('m-commit-pts').textContent=`~+${ePts} pts if deployed now`;
+    document.getElementById('m-commit-pts').textContent=`~+${ePts} pts if supplies delivered now`;
   } else {
     // Unknown zone — show question mark
     mTerrain.innerHTML=`<svg width="46" height="46" viewBox="0 0 46 46"><text x="23" y="30" text-anchor="middle" font-family="Orbitron" font-size="22" font-weight="700" fill="#1e3a10">?</text></svg>`;
-    document.getElementById('m-sig').textContent='Terrain: CLASSIFIED — scout to reveal';
+    document.getElementById('m-sig').textContent='Conditions unknown — send a recon team to find out';
     document.getElementById('m-demand').textContent='';
-    document.getElementById('m-commit-pts').textContent='+5 to +50 pts';
+    document.getElementById('m-commit-pts').textContent='+5 to +50 pts · need level unknown — deploying blind';
   }
 
   const last=sec.probeHistory.at(-1);
-  let histTxt='No scout data on record';
+  let histTxt='No recon data on record';
   if(last){
-    const stale=SS.disrupted&&!last.postDisruption?' ⚠ pre-disruption':'';
-    histTxt=`Last scout R${last.iteration}/C${last.cycle}: demand ${last.demand}/5 — ${DEMAND_LABELS[last.demand]}${stale}`;
+    const stale=SS.disrupted&&!last.postDisruption?' ⚠ pre-disruption (may be outdated)':'';
+    histTxt=`Last recon R${last.iteration}/C${last.cycle}: need ${last.demand}/5 — ${DEMAND_LABELS[last.demand]}${stale}`;
   }
   document.getElementById('m-hist').textContent=histTxt;
 
@@ -1401,20 +1576,20 @@ function openModal(idx){
   const scoutBtn=document.querySelector('.ch-btn.sct');
 
   // During tutorial probe steps, only scouting is allowed — hide deploy entirely
-  const tutProbeOnly = TUT_STATE.active && TUT_STEPS[TUT_STATE.step]?.type==='probe';
+  const tutProbeOnly = TUT_STATE.active && !TUT_STATE.freeplay && TUT_STEPS[TUT_STATE.step]?.type==='probe';
 
   if(!valid || tutProbeOnly){
     deployBtn.style.display='none';
     scoutBtn.classList.add('sct-only');
     convoyNote.style.display = (!valid && !tutProbeOnly) ? 'block' : 'none';
     if(!valid && !tutProbeOnly)
-      convoyNote.textContent=`Convoy cannot reach Zone ${sec.name} — not adjacent to current position (Zone ${SS.sectors[SS.truckPos].name}). Scouting is still available.`;
+      convoyNote.textContent=`Your convoy can't reach Sector ${sec.name} from its current position at Sector ${SS.sectors[SS.truckPos].name}.`;
   } else {
     deployBtn.style.display='';
     scoutBtn.classList.remove('sct-only');
     if(SS.truckPos!==null&&!isTruck){
       convoyNote.style.display='block';
-      convoyNote.textContent=`Zone ${sec.name} is adjacent to convoy — deployment available.`;
+      convoyNote.textContent=`Sector ${sec.name} is next to your convoy — delivery is available.`;
     } else {
       convoyNote.style.display='none';
     }
@@ -1435,10 +1610,10 @@ function closeModal(){
 function updateConvoyStrip(){
   const msg=document.getElementById('convoy-msg');
   if(SS.truckPos===null){
-    msg.innerHTML=`<span class="free">Undeployed</span> — first deployment may target any zone`;
+    msg.innerHTML=`<span class="free">Convoy ready</span> — first delivery can go to any sector`;
   } else {
     const zn=SS.sectors[SS.truckPos].name;
-    msg.innerHTML=`At <strong>${zn}</strong> — <span class="locked">next deployment must be adjacent</span>`;
+    msg.innerHTML=`At <strong>${zn}</strong> — <span class="locked">next delivery must be to an adjacent sector</span>`;
   }
 }
 
@@ -1464,18 +1639,19 @@ function resolveAction(action){
     SS.truckPos=idx;
     SS.iterDepletion[idx]=(SS.iterDepletion[idx]||0)+1;
     const newEff=effectiveDemand(sec);
-    toastMsg=`CONVOY → Zone ${sec.name} · Demand ${effDemand}/5 · +${pts}`;
-    if(newEff<effDemand) toastMsg+=` · Zone now ${newEff}/5`;
-    popupDetail=`Demand ${effDemand}/5 — ${DEMAND_LABELS[effDemand]}`+(newEff<effDemand?` · reduced to ${newEff}/5`:'');
+    toastMsg=`SUPPLIES → Sector ${sec.name} · Need ${effDemand}/5 · +${pts}`;
+    if(newEff<effDemand) toastMsg+=` · Sector now need ${newEff}/5`;
+    popupDetail=`Need ${effDemand}/5 — ${DEMAND_LABELS[effDemand]}`+(newEff<effDemand?` · reduced to ${newEff}/5`:``);
   } else {
     pts=CFG.PROBE_REWARD;
     revealedDemand=baseDemandNow(sec);
     sec.scouted=true;
+    _scoutedCount++;
     sec.probeHistory.push({iteration:SS.iter,cycle:SS.cycleInIter+1,demand:revealedDemand,postDisruption:SS.disrupted});
     SS.iterP++;SS.totalP++;
     tone='info';
-    toastMsg=`SCOUT → Zone ${sec.name} · Demand: ${revealedDemand}/5 · +${pts}`;
-    popupDetail=`Demand confirmed: ${revealedDemand}/5 — ${DEMAND_LABELS[revealedDemand]}`;
+    toastMsg=`RECON → Sector ${sec.name} · Need: ${revealedDemand}/5 · +${pts}`;
+    popupDetail=`Need confirmed: ${revealedDemand}/5 — ${DEMAND_LABELS[revealedDemand]}`;
   }
 
   SS.iterScore+=pts;SS.totalScore+=pts;SS.cycleInIter++;
@@ -1508,7 +1684,7 @@ function resolveAction(action){
 
   // Catch trial detection: is there an adjacent scouted high-demand zone?
   // Flag if: iter>=5, action taken, there exists an adj zone scouted with eff demand>=4
-  let isCatchTrial=false, catchCorrect=null;
+  let isCatchTrial=false, catchCorrect=null, catchHigherWasScouted=false;
   if(!SS.isPractice && SS.iter>=5 && action==='commit'){
     const adjSet2=adjacentTo(idx);
     const highAdj=[...adjSet2].filter(ai=>{
@@ -1517,12 +1693,11 @@ function resolveAction(action){
     });
     if(highAdj.length>0){
       isCatchTrial=true;
-      // "correct" = they deployed somewhere with eff demand>=4
       catchCorrect=effDemand>=4;
+      catchHigherWasScouted=true; // player knew better options existed
     }
   }
-  // Also flag as catch trial opportunity if player chose low-demand commit
-  // when a high-demand scouted zone was available anywhere adjacent to truck
+  // Also flag when player chose low-demand commit with high-demand scouted zone available
   if(!SS.isPractice && SS.iter>=5 && action==='commit' && SS.truckPos!==null){
     const adjToTruck=adjacentTo(SS.truckPos);
     adjToTruck.add(SS.truckPos);
@@ -1531,10 +1706,15 @@ function resolveAction(action){
       return as.scouted && effectiveDemand(as)>=4;
     });
     if(highAvail.length>0 && effDemand<=2){
-      isCatchTrial=true;catchCorrect=false;
+      isCatchTrial=true; catchCorrect=false;
+      catchHigherWasScouted=true;
     }
   }
-  if(isCatchTrial) SS.catchTrials.push({trial_global:(SS.iter-1)*CFG.CYCLES+SS.cycleInIter,catch_correct:catchCorrect});
+  if(isCatchTrial) SS.catchTrials.push({
+    trial_global:(SS.iter-1)*CFG.CYCLES+SS.cycleInIter,
+    catch_correct:catchCorrect,
+    catch_higher_was_scouted:catchHigherWasScouted,
+  });
 
   // Modal duration
   const modalDuration = SS.modalOpenTime ? Date.now()-SS.modalOpenTime : null;
@@ -1594,8 +1774,9 @@ function resolveAction(action){
       explore_rate_iter:    SS.cycleInIter>0?SS.iterP/SS.cycleInIter:0,
       explore_rate_10:      rollingRate(10),
       // Catch trial
-      is_catch_trial:       isCatchTrial,
-      catch_correct:        catchCorrect,
+      is_catch_trial:           isCatchTrial,
+      catch_correct:            catchCorrect,
+      catch_higher_was_scouted: catchHigherWasScouted,
       // Internal timing marker for next trial's time_to_zone_select calc
       _modal_close_time:    Date.now(),
     };
@@ -1638,7 +1819,16 @@ function resolveAction(action){
   // Advance guided tutorial if active
   if(TUT_STATE.active) advanceTutorial(action, idx);
 
-  if(SS.cycleInIter>=CFG.CYCLES) setTimeout(endIteration,1100);
+  if(SS.cycleInIter>=CFG.CYCLES){
+    // Brief flash on the progress bar to signal round completion
+    const prog = document.getElementById('prog');
+    if(prog){
+      prog.style.transition = 'background .15s';
+      prog.style.background = 'var(--accent)';
+      setTimeout(()=>{ prog.style.background=''; prog.style.transition=''; }, 400);
+    }
+    setTimeout(endIteration,1100);
+  }
 }
 
 function rollingRate(w){
@@ -1700,7 +1890,7 @@ function showPointsPopup(action,zn,pts,detail,dem){
   if(action==='probe') tone='tone-probe';
   else if(dem<=2) tone='tone-low';
   pp.className='pts-popup '+tone;
-  document.getElementById('pp-action').textContent=action==='commit'?'▸ Convoy deployed':'▸ Scout returned';
+  document.getElementById('pp-action').textContent=action==='commit'?'▸ Supplies delivered':'▸ Recon complete';
   document.getElementById('pp-zone').textContent=zn;
   document.getElementById('pp-pts').textContent='+'+pts+' pts';
   document.getElementById('pp-detail').textContent=detail;
@@ -2039,8 +2229,8 @@ function endSession(){
     session_complete:true,
     config:CFG,
     terrain_demand_mapping:{
-      pre_disruption: {forest:'4-5',river:'3-4',mountain:'2-3',field:'1-2'},
-      post_disruption:{forest:'1-2',river:'2-3',mountain:'3-4',field:'4-5'},
+      pre_disruption: {mountain:'4-5',forest:'3-4',field:'2-3',river:'1-2'},
+      post_disruption:{river:'4-5',field:'3-4',forest:'2-3',mountain:'1-2'},
     },
     summary:{
       total_score:SS.totalScore,max_possible:maxTot,
@@ -2072,12 +2262,12 @@ function endSession(){
   renderLineChart('chart-end', SS.iterLog.map(l=>l.score), SS.iterLog.length-1, true);
   const delta=postAvg-preAvg;
   document.getElementById('end-debrief').innerHTML=
-    `Session complete. Total score: <strong>${SS.totalScore} pts</strong> across 20 rounds. `+
-    `Overall scout rate: <strong>${Math.round(pRate*100)}%</strong> `+
-    `(${SS.totalP} scouts, ${SS.totalC} convoy deployments). `+
-    `Final intel coverage: <strong>${intelPct()}%</strong> of the grid. `+
-    `Pre-disruption average: <strong>${preAvg} pts</strong>. `+
-    `Post-disruption average: <strong>${postAvg} pts</strong> `+
+    `Operation complete. Total score: <strong>${SS.totalScore} pts</strong> across 20 rounds. `+
+    `Overall recon rate: <strong>${Math.round(pRate*100)}%</strong> `+
+    `(${SS.totalP} recon assessments, ${SS.totalC} supply deliveries). `+
+    `Sectors assessed: <strong>${intelPct()}%</strong> of the operational grid. `+
+    `Phase 1 avg (earthquake response): <strong>${preAvg} pts</strong>. `+
+    `Phase 2 avg (dam failure response): <strong>${postAvg} pts</strong> `+
     `(${delta>=0?'+':''}${delta} pts change).`;
   showScreen('screen-end');
 }
@@ -2093,69 +2283,112 @@ function showToast(msg,tone){
 }
 
 /* ══════════════════════════════════════════════
-   IN-GAME GUIDED TUTORIAL
-   Runs as a bottom bar overlay during the practice
-   round. Seven steps, four require real actions.
+   IN-GAME GUIDED TUTORIAL  (two-phase)
+
+   Phase 1 — Mechanics steps (prescribed actions):
+     Modal card overlays screen, grid locked on
+     button steps, action steps pulse valid tiles.
+
+   Phase 2 — Free play:
+     Card collapses to a compact bottom strip.
+     Player completes the round however they like.
+     Restrictions lifted. Decisions count remaining.
 ══════════════════════════════════════════════ */
 
-// Step definitions
-// type: 'button' = click Next to advance
-//       'probe'  = requires a scout action
-//       'commit' = requires a deploy action
+// Action step types:
+//   'button' = read and click Next
+//   'probe'  = must scout a zone
+//   'commit' = must deploy a convoy
+// freeplay:true = transition to free-play phase
 const TUT_STEPS = [
+  // ── Step 0: Mission context ──────────────────────────
   {
-    title: 'Welcome to Grid Actual',
-    body:  'You\'ll manage supply convoys across a classified 10×10 grid of forward operating zones. This training exercise will walk you through the mechanics. <strong>Your training score is not recorded.</strong>',
+    title: 'Your mission',
+    body:  'A major earthquake has struck the region. You are the logistics coordinator for the <strong>Joint Civil Support Task Force</strong> (National Guard and Army), directing supply convoys — food, water, and medical supplies — to sectors that need them most.'
+         + '<br><br>Each round you get <strong>10 decisions</strong>. High-need sectors are worth up to <strong>50 points</strong>. But need levels are hidden until you send a recon team. The challenge: decide when to gather intelligence and when to act on what you already know.'
+         + '<br><br><em style="color:var(--text3);font-size:12px">Training score is not recorded.</em>',
     type:  'button',
+    dimOnly: true,
+  },
+
+  // ── Steps 1–3: Interface orientation ────────────────
+  {
+    title: 'The operational grid',
+    body:  'This is your <strong>operational grid</strong> — 100 sectors covering the affected region. Your convoys move through this grid to deliver supplies.'
+         + '<br><br>Each sector shows a <strong>?</strong> until your recon team has assessed it. Once assessed, the sector reveals its terrain type and need level. Darker red means higher need — those are your priority targets. Mountain sectors were hit hardest by the earthquake.',
+    type:  'button',
+    highlight: '.map-frame',
+    noLock: true,
   },
   {
-    title: 'Step 1 — Classified zones',
-    body:  'Every zone begins <strong>classified</strong> — demand is hidden behind a <strong>?</strong>. Click any zone on the grid to open the decision panel, then choose <strong>Send Scout</strong> to reveal it.',
+    title: 'Score and progress',
+    body:  'The bar across the top tracks your performance.'
+         + '<br><br><strong>Round Score</strong> counts points earned in the current round. <strong>Total Score</strong> is your cumulative score across all rounds. The <strong>progress bar</strong> shows how many of your 10 decisions you\'ve used. <strong>Intel Coverage</strong> shows what percentage of the grid has been assessed.',
+    type:  'button',
+    highlight: '.hud,.round-track',
+    noLock: true,
+  },
+  {
+    title: 'Information panel',
+    body:  'The panel on the right keeps you informed during each round.'
+         + '<br><br>The <strong>top card</strong> shows points from your last action. <strong>Convoy Status</strong> tells you where your convoy is and where it can move next. The <strong>Sector Guide</strong> explains what tile colors and indicators mean — refer to it any time.',
+    type:  'button',
+    highlight: '.sidebar',
+    noLock: true,
+  },
+
+  // ── Steps 4–9: Mechanics (indices shifted by 3) ─────
+  {
+    title: 'Sectors are unassessed',
+    body:  'Every sector starts unassessed — you cannot see need levels until a recon team is sent. Click any sector marked <strong>?</strong> to open the action panel, then choose <strong>Send Recon Team</strong>. You\'ll earn +8 points and the sector\'s need level will be revealed.',
     type:  'probe',
-    badge: 'Scout any zone',
+    objective: 'Click any ? sector → choose Send Recon Team',
     pulse: 'unknown',
   },
   {
-    title: 'Scout result',
-    body:  '', // filled dynamically after action
+    title: 'Recon result',
+    body:  '', // filled dynamically after first probe
     type:  'button',
   },
   {
-    title: 'Step 2 — Deploy a convoy',
-    body:  'Click the zone you just scouted to deploy a convoy immediately. Points scale with demand — <strong>+50 pts</strong> at demand 5, down to <strong>+5 pts</strong> at demand 1.',
+    title: 'Deploy supplies',
+    body:  '', // filled dynamically — shows actual pts available
     type:  'commit',
-    badge: 'Deploy to scouted zone',
+    objective: 'Click the sector you just assessed to deliver supplies',
     pulse: 'last-scouted',
   },
   {
-    title: 'Demand depletion',
-    body:  '', // filled dynamically after action
+    title: 'Nice work!',
+    body:  '', // filled dynamically — leads with points scored
     type:  'button',
   },
   {
-    title: 'Step 3 — Convoy movement',
-    body:  'Your convoy is now positioned. <strong>Blue-highlighted zones</strong> are the only valid deployment targets. Try deploying to one of them. Scouting remains unrestricted everywhere.',
+    title: 'Convoy movement',
+    body:  'After your first delivery each round, your convoy can only move to <strong>adjacent sectors</strong> — highlighted in blue. These sectors have already been assessed so you can see their need level before committing.'
+         + '<br><br>Your convoy position <strong>resets at the start of every new round</strong>, so this only applies within a single round.',
     type:  'commit',
-    badge: 'Deploy to a blue zone',
+    objective: 'Deploy supplies to one of the blue highlighted sectors',
     pulse: 'adjacent',
   },
   {
-    title: 'Step 4 — Scout anywhere',
-    body:  'Scouting has no movement restriction — you can gather intelligence on <strong>any unknown zone</strong> regardless of convoy position. Click any <strong>?</strong> zone on the grid and send a scout.',
+    title: 'Recon is unrestricted',
+    body:  'Recon teams have <strong>no movement limit</strong>. You can assess any unknown sector regardless of where your convoy is.'
+         + '<br><br>Recon data is <strong>permanent</strong> — it stays visible for all 20 rounds. The more you assess now, the less you have to guess later.',
     type:  'probe',
-    badge: 'Scout any unknown zone',
+    objective: 'Assess any unknown sector anywhere on the grid',
     pulse: 'unknown',
   },
   {
-    title: 'Training complete',
-    body:  'You\'re ready. The scored mission has <strong>20 rounds</strong> of 10 decisions each. Zone demand resets at the start of every round. Your goal is to maximize total score. Good luck.',
-    type:  'button',
-    finalBtn: true,
+    freeplay: true,
   },
 ];
 
+// Index of the first freeplay step
+const TUT_FREEPLAY_IDX = TUT_STEPS.findIndex(s => s.freeplay);
+
 const TUT_STATE = {
   active:         false,
+  freeplay:       false,
   step:           0,
   lastScoutedIdx: null,
   lastCommitIdx:  null,
@@ -2163,6 +2396,7 @@ const TUT_STATE = {
 
 function initTutorialGuide(){
   TUT_STATE.active         = true;
+  TUT_STATE.freeplay       = false;
   TUT_STATE.step           = 0;
   TUT_STATE.lastScoutedIdx = null;
   TUT_STATE.lastCommitIdx  = null;
@@ -2170,44 +2404,88 @@ function initTutorialGuide(){
 }
 
 function hideTutorialGuide(){
-  TUT_STATE.active = false;
+  TUT_STATE.active   = false;
+  TUT_STATE.freeplay = false;
   const guide = document.getElementById('tut-guide');
-  if(guide) guide.classList.remove('active');
+  if(guide) guide.classList.remove('active','freeplay','has-objective');
   const grid = document.getElementById('sector-grid');
   if(grid) grid.classList.remove('tut-locked');
   clearTutPulse();
+  clearTutHighlight();
+  const _ov=document.getElementById('tut-dim-overlay');
+  if(_ov) _ov.classList.remove('active');
 }
 
 function renderTutGuide(){
-  const step = TUT_STEPS[TUT_STATE.step];
-  const n    = TUT_STEPS.length;
-  const el   = id => document.getElementById(id);
+  const guide = document.getElementById('tut-guide');
+  guide.classList.add('active');
 
-  el('tut-guide').classList.add('active');
-  el('tg-step').textContent  = `Step ${TUT_STATE.step + 1} of ${n}`;
-  el('tg-title').textContent = step.title;
-  el('tg-body').innerHTML    = step.body;
+  // ── Free-play phase ─────────────────────────────
+  if(TUT_STATE.freeplay){
+    guide.classList.add('freeplay');
+    guide.classList.remove('has-objective');
+    document.getElementById('tg-body-wrap').style.display = 'none';
+    document.getElementById('tg-footer').style.display    = 'none';
+    document.getElementById('tg-free').style.display      = 'flex';
+    const grid = document.getElementById('sector-grid');
+    if(grid) grid.classList.remove('tut-locked');
+    clearTutPulse();
+    clearTutHighlight();
+    const ov=document.getElementById('tut-dim-overlay');
+    if(ov) ov.classList.remove('active');
+    updateFreePlayRemaining();
+    return;
+  }
 
+  // ── Mechanics phase ─────────────────────────────
+  guide.classList.remove('freeplay');
+  document.getElementById('tg-body-wrap').style.display = '';
+  document.getElementById('tg-free').style.display      = 'none';
+
+  const step     = TUT_STEPS[TUT_STATE.step];
   const isButton = step.type === 'button';
-  el('tg-next').style.display  = isButton ? '' : 'none';
-  el('tg-badge').style.display = isButton ? 'none' : '';
-  el('tg-badge').textContent   = step.badge || '↑ Perform the action above';
+  const hasObj   = !isButton && !!step.objective;
 
-  // Lock grid during button (read) steps; unlock for action steps
+  // has-objective toggles row layout and hides footer
+  if(hasObj) guide.classList.add('has-objective');
+  else       guide.classList.remove('has-objective');
+
+  document.getElementById('tg-title').innerHTML = step.title;
+  document.getElementById('tg-body').innerHTML  = step.body;
+
+  // Objective box
+  const objBox = document.getElementById('tg-objective');
+  const objText= document.getElementById('tg-obj-text');
+  if(hasObj){ objBox.style.display=''; objText.textContent=step.objective; }
+  else       { objBox.style.display='none'; }
+
+  // Footer (Next button) — only on button/read steps
+  document.getElementById('tg-next').textContent = '[ Got it — Next ]';
+  document.getElementById('tg-footer').style.display = isButton ? '' : 'none';
+
+  // Lock grid on button/read steps (unless step opts out with noLock)
   const grid = document.getElementById('sector-grid');
   if(grid){
-    if(isButton) grid.classList.add('tut-locked');
-    else         grid.classList.remove('tut-locked');
+    if(isButton && !step.noLock) grid.classList.add('tut-locked');
+    else                          grid.classList.remove('tut-locked');
   }
 
-  // Final step: change button label
-  if(step.finalBtn){
-    el('tg-next').textContent = '[ Continue Training ]';
+  // UI region highlight + dim overlay
+  clearTutHighlight();
+  const overlay = document.getElementById('tut-dim-overlay');
+  if(step.highlight){
+    step.highlight.split(',').forEach(sel=>{
+      document.querySelectorAll(sel.trim()).forEach(el=>el.classList.add('tut-highlight'));
+    });
+    if(overlay) overlay.classList.add('active');
+  } else if(step.dimOnly){
+    // Dim everything — tutorial bar itself (z-index 53) punches through naturally
+    if(overlay) overlay.classList.add('active');
   } else {
-    el('tg-next').textContent = '[ Next ]';
+    if(overlay) overlay.classList.remove('active');
   }
 
-  // Pulse appropriate tiles
+  // Tile pulse
   clearTutPulse();
   if(step.pulse === 'unknown'){
     document.querySelectorAll('.sector.unknown').forEach(t=>t.classList.add('tut-pulse'));
@@ -2219,53 +2497,123 @@ function renderTutGuide(){
   }
 }
 
+function autoScoutAdjacentZones(){
+  if(SS.truckPos===null) return;
+  const adjSet=adjacentTo(SS.truckPos);
+  const adjArr=[...adjSet];
+  const adjSetForBuild=adjacentTo(SS.truckPos);
+  let anyRevealed=false;
+  adjArr.forEach(idx=>{
+    const sec=SS.sectors[idx];
+    if(!sec.scouted){
+      sec.scouted=true;
+      _scoutedCount++;
+      sec.probeHistory.push({
+        iteration:SS.iter,cycle:SS.cycleInIter,
+        demand:baseDemandNow(sec),postDisruption:SS.disrupted,
+        autoRevealed:true,
+      });
+      anyRevealed=true;
+      // Patch this single tile rather than full rebuild
+      const old=document.getElementById(`tile-${idx}`);
+      if(old) old.replaceWith(buildTileElement(idx,adjSetForBuild,false));
+    }
+  });
+  if(anyRevealed){
+    // Re-apply tutorial pulse on newly revealed tiles
+    clearTutPulse();
+    document.querySelectorAll('.sector.adj-valid').forEach(t=>t.classList.add('tut-pulse'));
+  }
+}
+
+function updateFreePlayRemaining(){
+  const rem = CFG.CYCLES - SS.cycleInIter;
+  const el  = document.getElementById('tg-free-remaining');
+  if(el) el.textContent = rem > 0 ? `(${rem} left)` : '';
+  const sub = document.getElementById('tg-free-sub');
+  if(sub) sub.textContent = rem > 0
+    ? "You've learned the mechanics. Use your remaining decisions however you like."
+    : 'Round complete!';
+}
+
 function clearTutPulse(){
   document.querySelectorAll('.sector.tut-pulse').forEach(t=>t.classList.remove('tut-pulse'));
 }
+function clearTutHighlight(){
+  document.querySelectorAll('.tut-highlight').forEach(el=>el.classList.remove('tut-highlight'));
+}
 
 function tutGuideNext(){
-  if(!TUT_STATE.active) return;
-  const step = TUT_STEPS[TUT_STATE.step];
-  if(step.finalBtn){
-    // Dismiss guide, let player finish practice round freely
-    hideTutorialGuide();
-    return;
-  }
+  if(!TUT_STATE.active || TUT_STATE.freeplay) return;
   TUT_STATE.step++;
+  if(TUT_STATE.step >= TUT_FREEPLAY_IDX) TUT_STATE.freeplay = true;
+  // Before the deploy-adjacent step (index 5), auto-reveal adjacent zones
+  if(TUT_STATE.step === 8) autoScoutAdjacentZones();
   renderTutGuide();
 }
 
 // Called from resolveAction when tutorial is active
 function advanceTutorial(action, idx){
   if(!TUT_STATE.active) return;
+
+  if(TUT_STATE.freeplay){
+    updateFreePlayRemaining();
+    return;
+  }
+
   const step = TUT_STEPS[TUT_STATE.step];
 
   if(action === 'probe' && step.type === 'probe'){
     TUT_STATE.lastScoutedIdx = idx;
     const sec = SS.sectors[idx];
     const eff = effectiveDemand(sec);
-    // Fill in the dynamic debrief for step 2
-    TUT_STEPS[2].body =
-      `Your scout revealed <strong>${sec.name}</strong>: terrain <strong>${TERRAIN_NAMES[sec.terrain]}</strong>, ` +
-      `demand <strong>${eff}/5 — ${DEMAND_LABELS[eff]}</strong>. ` +
-      `The tile now shows its terrain icon and a color that reflects demand level — ` +
-      `<strong style="color:var(--red)">red</strong> zones are high priority. ` +
-      `Scout history appears as dots at the tile bottom and persists across all rounds.`;
+
+    // Terrain signal — humanitarian framing
+    const terrainHint = [
+      'Forest sectors tend to have <strong>moderate to high need</strong> — communities cut off by landslides and debris.',
+      'River sectors tend to have <strong>low need</strong> in the initial phase — valley communities are more accessible.',
+      'Mountain sectors tend to have <strong>critical need</strong> — these communities were hit hardest by the earthquake.',
+      'Field sectors tend to have <strong>moderate need</strong> — open terrain allows some access but population is spread thin.',
+    ][sec.terrain];
+
+    // Recon result debrief (step 2)
+    TUT_STEPS[5].body =
+      `Sector <strong>${sec.name}</strong> assessed — need level <strong style="color:${DEMAND_COLORS[eff]}">${eff}/5 (${DEMAND_LABELS[eff]})</strong>. `
+    + `Sector color shows need at a glance: <strong style="color:var(--red)">red</strong> = critical, green = low.`
+    + `<br><br><strong>Terrain is a clue.</strong> ${terrainHint} Use terrain to decide which unassessed sectors to prioritize next.`
+    + `<br><br>Recon data <strong>stays visible for all 20 rounds</strong>. You only need to assess a sector once.`;
+
+    // Deploy step — show exact points available (step 3)
+    const deployPts = Math.round(CFG.COMMIT_MIN + ((eff-1)/4) * (CFG.COMMIT_MAX - CFG.COMMIT_MIN));
+    TUT_STEPS[6].body =
+      `Sector <strong>${sec.name}</strong> has need level <strong style="color:${DEMAND_COLORS[eff]}">${eff}/5</strong> — `
+    + `delivering supplies there right now is worth <strong style="color:var(--accent);font-family:var(--hud);font-size:16px">+${deployPts} pts</strong>.`
+    + `<br><br>Click the sector to deliver. <strong>Assessed sectors deploy with one click</strong> — no extra step.`;
+
     TUT_STATE.step++;
+    if(TUT_STATE.step >= TUT_FREEPLAY_IDX) TUT_STATE.freeplay = true;
     renderTutGuide();
+
   } else if(action === 'commit' && step.type === 'commit'){
     TUT_STATE.lastCommitIdx = idx;
-    const sec  = SS.sectors[idx];
-    const dep  = SS.iterDepletion[idx] || 0;
+    const sec    = SS.sectors[idx];
     const newEff = effectiveDemand(sec);
-    if(TUT_STATE.step === 3){
-      // Depletion debrief after first commit
-      TUT_STEPS[4].body =
-        `You deployed to <strong>${sec.name}</strong>. Each deployment reduces that zone\'s demand by <strong>2 levels</strong> for the rest of this round. ` +
-        `The zone\'s demand is now <strong>${newEff}/5</strong> — notice the tile color has shifted. ` +
-        `Deploying to the same zone repeatedly yields diminishing returns.`;
+
+    if(TUT_STATE.step === 6){
+      // Points-first debrief (step 7)
+      const prevEff  = Math.min(5, newEff + 2);
+      const earnedPts= Math.round(CFG.COMMIT_MIN + ((prevEff-1)/4) * (CFG.COMMIT_MAX - CFG.COMMIT_MIN));
+      const newPts   = Math.round(CFG.COMMIT_MIN + ((newEff-1)/4) * (CFG.COMMIT_MAX - CFG.COMMIT_MIN));
+
+      TUT_STEPS[7].body =
+        `<span style="font-family:var(--hud);font-size:22px;color:var(--accent)">+${earnedPts} pts</span> earned — supplies delivered to Sector <strong>${sec.name}</strong>!`
+      + `<br><br>One thing to know: each delivery reduces that sector's available need by <strong>2 levels</strong> for the rest of this round. `
+      + `${sec.name} is now need level ${newEff}/5 — worth ${newPts} pts if you deliver again. `
+      + `<strong>Need levels reset at the start of each new round.</strong>`;
     }
+
     TUT_STATE.step++;
+    if(TUT_STATE.step >= TUT_FREEPLAY_IDX) TUT_STATE.freeplay = true;
     renderTutGuide();
   }
 }
@@ -2277,14 +2625,21 @@ function advanceTutorial(action, idx){
    the real demand structure.
 ══════════════════════════════════════════════ */
 function makePracticeSectors(){
-  // Simple 10×10 practice grid: demand based on a readable pattern
-  // Terrain cycles in groups of 4, moderate demand levels
+  // 10×10 practice grid — terrain shuffled (not cyclic) so it doesn't
+  // prime predictable patterns before the randomized research grid.
+  // Uses a separate seed so practice never interacts with the research RNG.
   const pracRng=mkRng(9999);
   const n=CFG.GRID_COLS*CFG.GRID_COLS; // 100
-  const terrainCycle=[0,1,2,3];
+  // 25 of each terrain type, shuffled
+  const terrainPool=[];
+  for(let t=0;t<4;t++) for(let k=0;k<25;k++) terrainPool.push(t);
+  for(let i=terrainPool.length-1;i>0;i--){
+    const j=Math.floor(pracRng()*(i+1));
+    [terrainPool[i],terrainPool[j]]=[terrainPool[j],terrainPool[i]];
+  }
   return Array.from({length:n},(_,i)=>{
-    const terrain=terrainCycle[i%4];
-    // Demand 3-5 for practice — gives meaningful depletion experience with -2 rule
+    const terrain=terrainPool[i];
+    // Demand 3-5 for practice — meaningful depletion experience with -2 rule
     const base=3+Math.floor(pracRng()*3);
     const cueInt=Math.max(0,Math.min(4,base-1));
     return{
@@ -2297,6 +2652,8 @@ function makePracticeSectors(){
 
 function startPracticeRound(){
   const sectors=makePracticeSectors();
+  precomputeAdjacency();
+  _scoutedCount=0;
   Object.assign(SS,{
     iter:1,cycleInIter:0,
     iterScore:0,totalScore:0,
@@ -2329,7 +2686,8 @@ function beginRealSession(){
 ══════════════════════════════════════════════ */
 function startSession(){
   const sectors=initSectors();
-  // Generate session ID: timestamp + 4 random hex chars
+  precomputeAdjacency();
+  _scoutedCount=0;
   const sessionId='GRID-'+Date.now()+'-'+Math.floor(Math.random()*0x10000).toString(16).padStart(4,'0').toUpperCase();
   Object.assign(SS,{
     iter:1,cycleInIter:0,
@@ -2345,6 +2703,11 @@ function startSession(){
     sessionId,sessionComplete:false,
     disrupted:false,
   });
+  // Write session ID immediately so Qualtrics can capture it
+  // even if the participant doesn't complete the session
+  const earlyExport={session_id:sessionId,session_complete:false,started_at:new Date().toISOString()};
+  document.getElementById('data-export').value=JSON.stringify(earlyExport);
+  window._gridSessionId=sessionId;
   showScreen('screen-game');renderGrid();updateHud();
 }
 
@@ -2385,5 +2748,8 @@ document.getElementById('modal').addEventListener('click',e=>{
   if(e.target===document.getElementById('modal'))closeModal();
 });
 </script>
+<!-- Dim overlay — shown during interface orientation tutorial steps -->
+<div id="tut-dim-overlay"></div>
+
 </body>
 </html>
